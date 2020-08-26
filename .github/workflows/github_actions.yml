@@ -14,8 +14,7 @@ jobs:
   # This workflow contains a single job called "train"
   train:
     name: Training
-    runs-on: ubuntu-latest
-    
+    runs-on: [self-hosted,gpu-0]
     steps:
     - name: Execute trainings
       run: echo Executing training
