@@ -17,4 +17,4 @@ jobs:
     runs-on: [self-hosted,gpu-0]
     steps:
     - name: Execute trainings
-      run: sh src/run.sh
+      run: echo $(pwd)
