@@ -1,3 +1,7 @@
-run:
-  project_name: Test Project
-  run_name: Test run
+project_name: Test Project
+run_name: Test run
+tags: ''
+
+batch_size: 2
+net:
+  in_channel: 1

@@ -2,3 +2,4 @@ pytest
 torch===1.6.0
 torchvision
 pytorch_lightning
+wandb

@@ -1,4 +1,5 @@
 import os
+from argparse import Namespace
 import torch
 import hydra
 from omegaconf import DictConfig
@@ -12,7 +13,7 @@ import networks
 class VQEngine(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams
+        self.hparams = hparams
         self.net = networks.VQVAE(**self.hparams.net)
 
     def forward(self, *args, **kwargs):
@@ -34,7 +35,16 @@ class VQEngine(pl.LightningModule):
 def main(cfg: DictConfig) -> None:
     print(cfg)
 
+    if cfg.get('debug', False):
+        logger = None
+    else:
+        logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
+    engine = VQEngine(Namespace(**cfg))
+    trainer = pl.Trainer(
+        logger=logger,
+        gpus=cfg.get('gpus', 0),
+    )
 
 
 
