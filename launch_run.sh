@@ -1,5 +1,5 @@
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-COMMIT_MESSAGE=${@}
+COMMIT_MESSAGE=$1
 echo Current branch: $CURRENT_BRANCH
 echo Run message: $COMMIT_MESSAGE
 git commit -am "$COMMIT_MESSAGE"
