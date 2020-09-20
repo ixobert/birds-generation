@@ -17,4 +17,4 @@ jobs:
     runs-on: [self-hosted,gpu-0]
     steps:
     - name: Execute trainings
-      run: echo Executing training
+      run: sh src/run.sh
