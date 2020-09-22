@@ -16,5 +16,8 @@ jobs:
     name: Training
     runs-on: [self-hosted,gpu-0]
     steps:
+    - uses: actions/checkout@v2
+      with:
+        python-version: 3.8
     - name: Execute trainings
       run: echo $(pwd)
