@@ -21,9 +21,11 @@ jobs:
   
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      
     - name: Set up Python 3.7
-    - uses: conda-incubator/setup-miniconda@v1
+      uses: conda-incubator/setup-miniconda@v1
       with:
         auto-update-conda: true
         python-version: 3.7
