@@ -24,14 +24,14 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
       
-    - name: Activate Conda Environment
-      run: |
-        conda init zsh
-        conda activate audioGeneration         
+#     - name: Activate Conda Environment
+#       run: |
+#         conda init zsh
+#         conda activate audioGeneration         
          
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements.txt
+#     - name: Install Dependencies
+#       run: |
+#         pip install -r requirements.txt
       
     - name: Execute trainings
-      run: python --version
+      run: home/future/anaconda3/envs/audioGeneration/bin/python --version
