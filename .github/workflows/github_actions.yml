@@ -26,6 +26,7 @@ jobs:
       
     - name: Activate Conda Environment
       run: |
+        conda init zsh
         conda activate audioGeneration         
          
     - name: Install Dependencies
