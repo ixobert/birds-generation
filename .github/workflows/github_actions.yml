@@ -15,22 +15,20 @@ jobs:
   train:
     name: Training
     runs-on: [self-hosted,gpu-0]
-    strategy:
-      matrix:
-        python-version: [3.7]
+#     strategy:
+#       matrix:
+#         python-version: [3.7]
   
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
       
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v1.7.0
-      with:
-        auto-update-conda: true
-        python-version: 3.7
-          
-          
+#     - name: Setup Miniconda
+#       uses: conda-incubator/setup-miniconda@v1.7.0
+#       with:
+#         auto-update-conda: true
+#         python-version: 3.7
           
     - name: Install dependencies
       run: |
