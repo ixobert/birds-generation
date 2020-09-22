@@ -34,4 +34,4 @@ jobs:
 #         pip install -r requirements.txt
       
     - name: Execute trainings
-      run: home/future/anaconda3/envs/audioGeneration/bin/python --version
+      run: /home/future/anaconda3/envs/audioGeneration/bin/python --version
