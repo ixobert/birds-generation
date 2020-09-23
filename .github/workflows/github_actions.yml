@@ -35,4 +35,5 @@ jobs:
 #         pip install -r requirements.txt
       
     - name: Execute trainings
-      run: nvidia-smi
+      run: sh run.sh
+      
