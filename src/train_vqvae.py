@@ -1,4 +1,5 @@
 import os
+os.environ['HYDRA_FULL_ERROR'] = 1
 from argparse import Namespace
 import torch
 import hydra
@@ -7,7 +8,6 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger as Logger
 import networks
-
 
 
 class VQEngine(pl.LightningModule):
