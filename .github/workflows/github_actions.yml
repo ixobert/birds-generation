@@ -15,6 +15,7 @@ jobs:
   # This workflow contains a single job called "train"
   train:
     name: Training
+    # runs-on: [ubuntu-latest]
     runs-on: [self-hosted,gpu-0]
 #     strategy:
 #       matrix:
@@ -24,15 +25,7 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
-      
-#     - name: Activate Conda Environment
-#       run: |
-#         conda init zsh
-#         conda activate audioGeneration         
-         
-#     - name: Install Dependencies
-#       run: |
-#         pip install -r requirements.txt
+
     - name: Install Dependencies
       run: sh setup.sh
 
