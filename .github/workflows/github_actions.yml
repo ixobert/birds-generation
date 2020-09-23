@@ -35,3 +35,4 @@ jobs:
       
     - name: Execute trainings
       run: sh run.sh
+      
