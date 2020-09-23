@@ -1,3 +1,4 @@
+  
 # This is a basic workflow to help you get started with Actions
 
 name: Birds Generation Actions
@@ -14,8 +15,23 @@ jobs:
   # This workflow contains a single job called "train"
   train:
     name: Training
-    runs-on: ubuntu-latest
-    
+    runs-on: [self-hosted,gpu-0]
+#     strategy:
+#       matrix:
+#         python-version: [3.7]
+  
+
     steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      
+#     - name: Activate Conda Environment
+#       run: |
+#         conda init zsh
+#         conda activate audioGeneration         
+         
+    - name: Install Dependencies
+      run: sh setup.sh
+      
     - name: Execute trainings
-      run: echo Executing training
+      run: sh run.sh

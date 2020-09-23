@@ -1,0 +1,1 @@
+/home/future/anaconda3/envs/audioGeneration/bin/python -m pip install -r requirements.txt
