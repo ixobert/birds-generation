@@ -1,5 +1,5 @@
 import os
-os.environ['HYDRA_FULL_ERROR'] = 1
+os.environ['HYDRA_FULL_ERROR'] = '1'
 from argparse import Namespace
 import torch
 import hydra
