@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Set Permission
-      run: sudo chown -R $USER:$USER /home/future/actions-runner/_work/birds-generation
+      run: chown -R $USER:$USER /home/future/actions-runner/_work/birds-generation
 
     - name: Checkout Code
       uses: actions/checkout@v2
