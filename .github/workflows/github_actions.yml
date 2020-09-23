@@ -30,5 +30,9 @@ jobs:
       run: sh setup.sh
 
     - name: Execute trainings
-      run: sh run.sh
+      run: |
+        cd ./src 
+        /home/future/anaconda3/envs/audioGeneration/bin/python train_vqvae.py
+        cd ..
+
       
