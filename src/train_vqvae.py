@@ -31,7 +31,7 @@ class VQEngine(pl.LightningModule):
     def validation_end(self, outputs):
         pass
 
-@hydra.main(config_path="configs", config_name="train_vqvae")
+# @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
     print(cfg)
 

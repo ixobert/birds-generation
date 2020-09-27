@@ -1,3 +1,3 @@
 cd src/
-/home/future/anaconda3/envs/audioGeneration/bin/python train_vqvae.py
+/home/future/anaconda3/envs/scologan/bin/python train_vqvae.py
 cd ..
