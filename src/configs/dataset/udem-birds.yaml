@@ -1,7 +1,10 @@
 dataset:
   num_workers: 2
-  train_path: '/Users/test/Documents/Projects/Master/udem-birds/samples/train_list.txt'
-  root_dir: '/Users/test/Documents/Projects/Master/udem-birds/classes'
+  # train_path: '/Users/test/Documents/Projects/Master/udem-birds/samples/train_list.txt'
+  # root_dir: '/Users/test/Documents/Projects/Master/udem-birds/classes'
+  train_path: '/media/future/Rapido/udem-birds/samples/train_list.txt'
+  root_dir: '/media/future/Rapido/udem-birds/classes'
+
   classes_name: 
     - 'AMGP_1(tu-tit)'
     - 'AMGP_2(tuuut)'
