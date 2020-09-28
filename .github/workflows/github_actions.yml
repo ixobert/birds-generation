@@ -36,7 +36,7 @@ jobs:
       run: |
         cd ./src 
         # /home/future/anaconda3/envs/scologan/bin/python train_vqvae.py
-        sh run.sh
+        sh ./run.sh
         cd ..
 
       
