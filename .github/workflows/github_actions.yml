@@ -33,8 +33,9 @@ jobs:
       run: sh setup.sh
 
     - name: Execute trainings
-      run: |
-        cd ./src & sh ./run.sh &cd ..
+      run: sh run.sh
+      # run: |
+        # cd ./src & sh ./run.sh &cd ..
 
       
         # /home/future/anaconda3/envs/scologan/bin/python train_vqvae.py
