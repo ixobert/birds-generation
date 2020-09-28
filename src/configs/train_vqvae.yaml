@@ -1,8 +1,15 @@
+defaults:
+  - dataset: udem-birds 
 project_name: Test Project
 run_name: Test run
 tags: ''
 
+
 num_workers: 4
 batch_size: 2
+lr: 0.00002
+latent_loss_weight: 0.25
 net:
   in_channel: 1
+
+debug: True

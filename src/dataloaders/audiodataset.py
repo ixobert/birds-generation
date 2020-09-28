@@ -174,6 +174,7 @@ class AudioDataset():
             # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
             for i in range(len(features)):
                 features[i] = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features[i])
+        else:
             features = audio
 
         if self.return_tuple:
