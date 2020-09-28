@@ -4,3 +4,4 @@ torchvision
 pytorch_lightning
 wandb
 hydra-core
+opencv-python

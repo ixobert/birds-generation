@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger as Logger
 import networks
+from dataloaders import SpectrogramsDataModule
 
 
 class VQEngine(pl.LightningModule):
@@ -40,12 +41,12 @@ def main(cfg: DictConfig) -> None:
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
+    train_dataloader = SpectrogramsDataModule(config=cfg)
     engine = VQEngine(Namespace(**cfg))
     trainer = pl.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
     )
-
 
 
 if __name__ == "__main__":
