@@ -15,6 +15,16 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.batch_size = self.config.get('batch_size', 2)
 
     def setup(self, stage=None):
+        #################
+        #TODO: To delete: this code makes my life easier during development
+        import sys
+        platform = sys.platform.lower()
+        print(f"Running on : {platform}")
+        if platform == 'darwin':
+            root_ = "/Users/test/Documents/Projects/Master/"
+            self.config['root_dir'] = os.path.join(root_, "udem-birds/classes")
+            self.config['train_path'] = os.path.join(root_, "udem-birds/samples/train_list.txt")
+        #################
         self.dataset = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=True, resize=False, return_tuple=True, use_spectrogram=self.config.get('use_mel', False))
 
     def train_dataloader(self):

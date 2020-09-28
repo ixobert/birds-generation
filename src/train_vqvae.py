@@ -68,6 +68,7 @@ def main(cfg: DictConfig) -> None:
     trainer = pl.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
+        max_epochs=cfg.get('nb_epochs', 3)
     )
 
     # Start training

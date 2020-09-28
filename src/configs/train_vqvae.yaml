@@ -6,6 +6,7 @@ tags: ''
 
 
 num_workers: 4
+nb_epochs: 100000
 batch_size: 2
 lr: 0.00002
 latent_loss_weight: 0.25
