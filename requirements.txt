@@ -6,3 +6,5 @@ wandb
 hydra-core
 opencv-python
 natsort
+librosa
+sklearn
