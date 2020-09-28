@@ -1,0 +1,13 @@
+dataset:
+  num_workers: 2
+  train_path: '/Users/test/Documents/Projects/Master/udem-birds/samples/train_list.txt'
+  root_dir: '/Users/test/Documents/Projects/Master/udem-birds/classes'
+  classes_name: 
+    - 'AMGP_1(tu-tit)'
+    - 'AMGP_2(tuuut)'
+    - 'WRSA_1(boingboingboing)'
+
+  resize: true
+  return_tuple: true
+  sr: 16384
+  use_mel: true
