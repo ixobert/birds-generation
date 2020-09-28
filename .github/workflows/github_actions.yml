@@ -34,9 +34,7 @@ jobs:
 
     - name: Execute trainings
       run: |
-        cd ./src 
-        # /home/future/anaconda3/envs/scologan/bin/python train_vqvae.py
-        sh ./run.sh
-        cd ..
+        cd ./src & sh ./run.sh &cd ..
 
       
+        # /home/future/anaconda3/envs/scologan/bin/python train_vqvae.py
