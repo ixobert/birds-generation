@@ -1,6 +1,6 @@
 defaults:
   - dataset: udem-birds 
-project_name: Test Paper
+project_name: birds-audio-generation
 run_name: Test run
 tags: 
   - 'debug'

@@ -29,6 +29,9 @@ class AudioDataset():
         self.resize = resize
         self.return_tuple = return_tuple
         self.use_spectrogram = use_spectrogram
+        if self.use_spectrogram and not self.spec:
+            print("Overriding spec variables because use_spectrogram is true")
+            self.spec = True
         print("Data initialization")
 
         self.data_paths = []

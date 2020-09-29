@@ -25,7 +25,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
             self.config['root_dir'] = os.path.join(root_, "udem-birds/classes")
             self.config['train_path'] = os.path.join(root_, "udem-birds/samples/train_list.txt")
         #################
-        self.dataset = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=True, resize=False, return_tuple=True, use_spectrogram=self.config.get('use_mel', False))
+        self.dataset = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=True, use_spectrogram=self.config.get('use_mel', False))
 
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
