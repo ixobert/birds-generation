@@ -31,7 +31,7 @@ class VQEngine(pl.LightningModule):
         recon_loss = self.criterion(output, target)
         loss = recon_loss + self.hparams['latent_loss_weight'] * latent_loss
         logs = {
-            'reconstruction_loss': recon_loss,
+            'mse': recon_loss,
             'latent_loss': latent_loss,
             'loss': loss,
         }
@@ -49,7 +49,6 @@ class VQEngine(pl.LightningModule):
         result.log('train_loss', loss)
         result.log_dict(logs)
         return result
-        
 
 
 
