@@ -1,8 +1,9 @@
 defaults:
   - dataset: udem-birds 
-project_name: Test Project
+project_name: Test Paper
 run_name: Test run
-tags: ''
+tags: 
+  - 'debug'
 
 
 num_workers: 4
