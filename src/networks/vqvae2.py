@@ -188,11 +188,12 @@ class VQVAE(nn.Module):
             stride=4,
         )
 
-    def forward(self, input):
+    def forward(self, input, logits_only=False):
         quant_t, quant_b, diff, _, _ = self.encode(input)
         dec = self.decode(quant_t, quant_b)
         dec = torch.tanh(dec)
-
+        if logits_only:
+            return dec
         return dec, diff
 
     def encode(self, input):

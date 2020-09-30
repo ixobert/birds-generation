@@ -11,6 +11,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger as Logger
 import networks
 from dataloaders import SpectrogramsDataModule
+import wandb
 
 
 class VQEngine(pl.LightningModule):
@@ -53,12 +54,22 @@ class VQEngine(pl.LightningModule):
         result.log_dict(logs)
         return result
 
+    def _generate(self, input):
+        out = self.net(input, logits_only=True)
+        if out.shape[0] == 1:
+            out = out.squeeze(1)
+        return out
+
     def on_epoch_end(self):
-        out = self.net(self.sample)
+        out = self._generate(self.sample)
         input_grid = make_grid(self.sample)
         recon_grid = make_grid(out)
-        self.logger.experiment.add_image('input', input_grid)
-        self.logger.experiment.add_image('reconstructed', recon_grid)
+        self.logger.log({
+            'input': input_grid,
+            'reconstructed': recon_grid
+        }, self.current_epoch)
+        # self.logger.experiment.add_image('input', input_grid, self.current_epoch)
+        # self.logger.experiment.add_image('reconstructed', recon_grid)
 
         pass
 
