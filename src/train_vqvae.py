@@ -2,6 +2,7 @@ import os
 os.environ['HYDRA_FULL_ERROR'] = '1'
 from argparse import Namespace
 import torch
+from torchvision.utils import make_grid
 import hydra
 from omegaconf import DictConfig
 import torch.nn.functional as F
@@ -18,6 +19,7 @@ class VQEngine(pl.LightningModule):
         self.hparams = hparams
         self.net = networks.VQVAE(**self.hparams.net)
         self.criterion = nn.MSELoss()
+        self.sample = None
 
     def forward(self, *args, **kwargs):
         return self.net(*args, **kwargs)
@@ -40,6 +42,7 @@ class VQEngine(pl.LightningModule):
 
     def training_step(self, train_batch, batch_idx):
         img, label, file_path = train_batch
+        self.sample = img
         out, latent_loss = self.net(img)
         latent_loss = latent_loss.mean()
 
@@ -49,6 +52,16 @@ class VQEngine(pl.LightningModule):
         result.log('train_loss', loss)
         result.log_dict(logs)
         return result
+
+    def on_epoch_end(self):
+        out = self.net(self.sample)
+        input_grid = make_grid(self.sample)
+        recon_grid = make_grid(out)
+        self.logger.experiment.add_image('input', input_grid)
+        self.logger.experiment.add_image('reconstructed', recon_grid)
+
+        pass
+
 
 
 
