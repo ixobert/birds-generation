@@ -56,22 +56,30 @@ class VQEngine(pl.LightningModule):
 
     def _generate(self, input):
         out = self.net(input, logits_only=True)
-        if out.shape[0] == 1:
-            out = out.squeeze(1)
         return out
 
-    def on_epoch_end(self):
+    def _remove_dim(self, input):
+        """ 
+        Remove extra dimension (dimension with only one vector)
+        """
+        if input.shape[0] == 1:
+            return input.squeeze(1)
+        return input
+
+    def training_epoch_end(self,*args, **kwargs):
         out = self._generate(self.sample)
-        input_grid = make_grid(self.sample)
+        out = self._remove_dim(out)
+
+        input_grid = make_grid(self._remove_dim(self.sample))
         recon_grid = make_grid(out)
-        self.logger.log({
+        self.logger.experiment.log({
             'input': input_grid,
             'reconstructed': recon_grid
         }, self.current_epoch)
         # self.logger.experiment.add_image('input', input_grid, self.current_epoch)
         # self.logger.experiment.add_image('reconstructed', recon_grid)
 
-        pass
+        return {}
 
 
 
@@ -81,7 +89,7 @@ def main(cfg: DictConfig) -> None:
     print(cfg)
 
     if cfg.get('debug', False):
-        logger = None
+        logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
