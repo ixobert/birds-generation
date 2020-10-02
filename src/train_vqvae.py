@@ -70,8 +70,8 @@ class VQEngine(pl.LightningModule):
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
-        input_grid = make_grid(self._remove_dim(self.sample))
-        recon_grid = make_grid(out)
+        input_grid = make_grid(self._remove_dim(self.sample).cpu())
+        recon_grid = make_grid(out.detach().cpu())
         self.logger.experiment.log({
             'input': input_grid,
             'reconstructed': recon_grid
