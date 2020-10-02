@@ -50,7 +50,7 @@ class VQEngine(pl.LightningModule):
 
         loss, logs = self._compute_loss(target=img, output=out, latent_loss=latent_loss)
         result = pl.TrainResult(minimize=loss)
-        result.log('train_loss', loss)
+        result.log('loss', loss)
         result.log_dict(logs)
         return result
 
@@ -76,8 +76,6 @@ class VQEngine(pl.LightningModule):
             'input': input_grid,
             'reconstructed': recon_grid
         }, self.current_epoch)
-        # self.logger.experiment.add_image('input', input_grid, self.current_epoch)
-        # self.logger.experiment.add_image('reconstructed', recon_grid)
 
         return {}
 
@@ -89,7 +87,8 @@ def main(cfg: DictConfig) -> None:
     print(cfg)
 
     if cfg.get('debug', False):
-        logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+        # logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+        logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
