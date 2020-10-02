@@ -65,6 +65,13 @@ class VQEngine(pl.LightningModule):
         if input.shape[0] == 1:
             return input.squeeze(1)
         return input
+    
+    def _convert_grid_to_img(self, grid):
+        from PIL import Image
+        ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
+        im = Image.fromarray(ndarr)
+        return im
+        # im.save(fp, format=format)
 
     def training_epoch_end(self,*args, **kwargs):
         out = self._generate(self.sample)
@@ -72,6 +79,9 @@ class VQEngine(pl.LightningModule):
 
         input_grid = make_grid(self._remove_dim(self.sample).cpu())
         recon_grid = make_grid(out.detach().cpu())
+
+        input_grid = self._convert_grid_to_img(input_grid)
+        recon_grid = self._convert_grid_to_img(recon_grid)
         self.logger.experiment.log({
             'input': input_grid,
             'reconstructed': recon_grid
