@@ -1,0 +1,16 @@
+dataset:
+  num_workers: 2
+
+  train_path: '/media/future/Rapido/Taylor/train_list2.txt'
+  val_path: '/media/future/Rapido/Taylor/train_list2.txt'
+  root_dir: '/media/future/Rapido/Taylor'
+  classes_name: 
+      - 'N_'
+      - 'NE_'
+      - 'CaVi_'
+      - 'BHGB_'
+
+  resize: true
+  return_tuple: true
+  sr: 16384
+  use_mel: true
