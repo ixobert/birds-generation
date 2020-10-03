@@ -54,6 +54,7 @@ class VQEngine(pl.LightningModule):
         result = pl.TrainResult(minimize=loss)
         result.log('loss', loss)
         result.log_dict(logs)
+        self.logger.experiment.log(logs)
         return result
 
     def _generate(self, input):
@@ -91,10 +92,10 @@ class VQEngine(pl.LightningModule):
         input_grid = self._convert_grid_to_img(input_grid, './input.png', save=True) #Need to set save to True if you want to save the image
         recon_grid = self._convert_grid_to_img(recon_grid, './recon.png', save=True)
         
-        # self.logger.experiment.log({
-        #     'input':         wandb.Image(input_grid),
-        #     'reconstructed': wandb.Image(recon_grid),
-        # }, self.current_epoch)
+        self.logger.experiment.log({
+            'input':         wandb.Image(input_grid),
+            'reconstructed': wandb.Image(recon_grid),
+        }, self.current_epoch)
 
         return {}
 
@@ -108,7 +109,7 @@ def main(cfg: DictConfig) -> None:
     print("Current Folder", current_folder)
 
     if cfg.get('debug', False):
-        logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+        logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
