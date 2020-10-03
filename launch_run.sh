@@ -8,9 +8,9 @@ echo Run message: $COMMIT_MESSAGE
 git commit -am "$COMMIT_MESSAGE"
 
 GIT_HASH=$(git rev-parse --short HEAD)
-echo $GIT_HASH > ./src/git_hash.txt
+echo -n $GIT_HASH > ./src/git_hash.txt
 git add ./src/git_hash.txt
-git commit ./src/git_hash.txt "add githash"
+git commit ./src/git_hash.txt -m "add githash"
 
 # git checkout runs
 # git merge $CURRENT_BRANCH
