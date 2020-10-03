@@ -66,25 +66,26 @@ class VQEngine(pl.LightningModule):
             return input.squeeze(1)
         return input
     
-    def _convert_grid_to_img(self, grid):
+    def _convert_grid_to_img(self, grid, name):
         from PIL import Image
         ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
         im = Image.fromarray(ndarr)
-        return im
-        # im.save(fp, format=format)
+        im.save(name)
+        return ndarr
 
     def training_epoch_end(self,*args, **kwargs):
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
-        input_grid = make_grid(self._remove_dim(self.sample).cpu())
-        recon_grid = make_grid(out.detach().cpu())
+        input_grid = make_grid(self._remove_dim(self.sample).cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
+        recon_grid = make_grid(out.detach().cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
 
-        input_grid = self._convert_grid_to_img(input_grid)
-        recon_grid = self._convert_grid_to_img(recon_grid)
+        input_grid = self._convert_grid_to_img(input_grid, './input.png')
+        recon_grid = self._convert_grid_to_img(recon_grid, './recon.png')
+        
         self.logger.experiment.log({
-            'input': input_grid,
-            'reconstructed': recon_grid
+            'input':         wandb.Image(input_grid),
+            'reconstructed': wandb.Image(recon_grid),
         }, self.current_epoch)
 
         return {}
@@ -95,6 +96,8 @@ class VQEngine(pl.LightningModule):
 @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
     print(cfg)
+    current_folder = os.getcwd()
+    print("Current Folder", current_folder)
 
     if cfg.get('debug', False):
         # logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
