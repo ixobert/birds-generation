@@ -107,6 +107,13 @@ def main(cfg: DictConfig) -> None:
     print(cfg)
     current_folder = os.getcwd()
     print("Current Folder", current_folder)
+    _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')
+    with open(_git_hash_file) as reader:
+        _git_hash = reader.read()
+        print(f"Git hash ***{_git_hash}***")
+        cfg['git_hash'] = _git_hash
+
+
 
     if cfg.get('debug', False):
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
