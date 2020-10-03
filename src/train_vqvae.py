@@ -90,10 +90,10 @@ class VQEngine(pl.LightningModule):
         input_grid = self._convert_grid_to_img(input_grid, './input.png', save=True) #Need to set save to True if you want to save the image
         recon_grid = self._convert_grid_to_img(recon_grid, './recon.png', save=True)
         
-        self.logger.experiment.log({
-            'input':         wandb.Image(input_grid),
-            'reconstructed': wandb.Image(recon_grid),
-        }, self.current_epoch)
+        # self.logger.experiment.log({
+        #     'input':         wandb.Image(input_grid),
+        #     'reconstructed': wandb.Image(recon_grid),
+        # }, self.current_epoch)
 
         return {}
 
