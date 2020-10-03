@@ -15,6 +15,7 @@ from dataloaders import SpectrogramsDataModule
 import wandb
 
 
+
 class VQEngine(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
