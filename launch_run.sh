@@ -10,11 +10,11 @@ echo Current branch: $CURRENT_BRANCH
 echo Run message: $COMMIT_MESSAGE
 git commit -am "$COMMIT_MESSAGE"
 
-#Get freshly commit hash
-GIT_HASH=$(git rev-parse --short HEAD)
-echo "$GIT_HASH" > ./src/git_hash.txt
-git add ./src/git_hash.txt
-git commit ./src/git_hash.txt -m "add githash"
+# #Get freshly commit hash
+# GIT_HASH=$(git rev-parse --short HEAD)
+# echo "$GIT_HASH" > ./src/git_hash.txt
+# git add ./src/git_hash.txt
+# git commit ./src/git_hash.txt -m "add githash"
 
 #Checkout to runs, merge with CURRENT_BRANCH and push
 git checkout runs
