@@ -109,7 +109,7 @@ def main(cfg: DictConfig) -> None:
     print("Current Folder", current_folder)
     _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')
     with open(_git_hash_file) as reader:
-        _git_hash = reader.read()
+        _git_hash = reader.read().strip()
         print(f"Git hash ***{_git_hash}***")
         cfg['git_hash'] = _git_hash
 
