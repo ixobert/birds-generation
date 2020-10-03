@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from torch import nn
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger as Logger
+from pytorch_lightning.callbacks import ModelCheckpoint
 import networks
 from dataloaders import SpectrogramsDataModule
 import wandb
@@ -66,22 +67,28 @@ class VQEngine(pl.LightningModule):
             return input.squeeze(1)
         return input
     
-    def _convert_grid_to_img(self, grid, name):
+    def _convert_grid_to_img(self, grid, name, save=False):
         from PIL import Image
         ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
         im = Image.fromarray(ndarr)
-        im.save(name)
+        if save:
+            im.save(name)
         return ndarr
 
     def training_epoch_end(self,*args, **kwargs):
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
+        os.makedirs('./outs', exist_ok=True)
+        os.makedirs('./samples', exist_ok=True)
+        torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
+        torch.save(out, f'./samples/{str(self.current_epoch)}.tmp')
+
         input_grid = make_grid(self._remove_dim(self.sample).cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
         recon_grid = make_grid(out.detach().cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
 
-        input_grid = self._convert_grid_to_img(input_grid, './input.png')
-        recon_grid = self._convert_grid_to_img(recon_grid, './recon.png')
+        input_grid = self._convert_grid_to_img(input_grid, './input.png', save=True) #Need to set save to True if you want to save the image
+        recon_grid = self._convert_grid_to_img(recon_grid, './recon.png', save=True)
         
         self.logger.experiment.log({
             'input':         wandb.Image(input_grid),
@@ -108,10 +115,12 @@ def main(cfg: DictConfig) -> None:
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
+    checkpoint_callback = ModelCheckpoint('./models', monitor='loss', verbose=True)
     trainer = pl.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
-        max_epochs=cfg.get('nb_epochs', 3)
+        max_epochs=cfg.get('nb_epochs', 3),
+        checkpoint_callback=checkpoint_callback,
     )
 
     # Start training
