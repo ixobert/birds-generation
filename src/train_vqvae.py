@@ -107,8 +107,7 @@ def main(cfg: DictConfig) -> None:
     print("Current Folder", current_folder)
 
     if cfg.get('debug', False):
-        # logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
-        logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+        logger = Logger(offline=True, project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
