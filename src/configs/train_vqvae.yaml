@@ -1,5 +1,6 @@
 defaults:
   - dataset: udem-birds 
+git_hash: ''
 project_name: birds-audio-generation
 run_name: Test run
 tags: 
