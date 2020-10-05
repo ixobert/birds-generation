@@ -49,7 +49,6 @@ class VQEngine(pl.LightningModule):
         out, latent_loss = self.net(img)
         latent_loss = latent_loss.mean()
 
-
         loss, logs = self._compute_loss(target=img, output=out, latent_loss=latent_loss)
         result = pl.TrainResult(minimize=loss)
         result.log('loss', loss)
