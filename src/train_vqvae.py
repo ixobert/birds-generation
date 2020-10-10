@@ -77,13 +77,15 @@ class VQEngine(pl.LightningModule):
         return ndarr
 
     def training_epoch_end(self,*args, **kwargs):
+        if self.current_epoch % 100 != 0:
+            return {}
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
         os.makedirs('./outs', exist_ok=True)
         os.makedirs('./samples', exist_ok=True)
         torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
-        torch.save(out, f'./samples/{str(self.current_epoch)}.tmp')
+        torch.save(self.sample, f'./samples/{str(self.current_epoch)}.tmp')
 
         input_grid = make_grid(self._remove_dim(self.sample).cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
         recon_grid = make_grid(out.detach().cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
