@@ -1,4 +1,4 @@
-set -e 0
+set -e
 #Get current branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 COMMIT_MESSAGE=$1
