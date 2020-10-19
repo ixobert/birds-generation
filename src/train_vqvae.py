@@ -13,6 +13,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 import networks
 from dataloaders import SpectrogramsDataModule
 import wandb
+import lmdb
+from utils.helpers import extract_latent
 
 
 
@@ -102,7 +104,6 @@ class VQEngine(pl.LightningModule):
 
 
 
-
 @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
     print(cfg)
@@ -116,8 +117,6 @@ def main(cfg: DictConfig) -> None:
     #     print(f"Git hash ***{_git_hash}***")
     #     cfg['git_hash'] = _git_hash
 
-
-
     if cfg.get('debug', False):
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
     else:
@@ -126,6 +125,7 @@ def main(cfg: DictConfig) -> None:
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
+    engine.load_from_checkpoint(checkpoint_path='')
     checkpoint_callback = ModelCheckpoint('./models', monitor='loss', verbose=True)
     trainer = pl.Trainer(
         logger=logger,
@@ -134,8 +134,18 @@ def main(cfg: DictConfig) -> None:
         checkpoint_callback=checkpoint_callback,
     )
 
-    # Start training
-    trainer.fit(engine, train_dataloader=train_dataloader)
+    if cfg.get('mode', 'train') in ['train', 'train_extract']:
+        # Start training
+        trainer.fit(engine, train_dataloader=train_dataloader)
+
+    elif 'extract' in cfg.get('mode'):
+        trainer.max_steps = 1
+        trainer.fit(engine, train_dataloader=train_dataloader)
+        # Extract latent variables from the training samples.
+        map_size = 100 * 1024*1024*1024
+        env = lmdb.open('./latents.lmdb', map_size=map_size)
+        extract_latent(lmdb_env=env, net=engine.net, dataloader=engine.train_dataloader())
+        
 
 if __name__ == "__main__":
     main()

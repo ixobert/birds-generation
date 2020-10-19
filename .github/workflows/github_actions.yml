@@ -20,7 +20,7 @@ jobs:
 #     strategy:
 #       matrix:
 #         python-version: [3.7]
-    timeout-minute: 4320
+    timeout-minutes: 4320
     steps:
     - name: Set Permission
       run: chown -R $USER:$USER /home/future/actions-runner/_work/birds-generation
