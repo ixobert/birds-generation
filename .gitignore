@@ -129,4 +129,6 @@ dmypy.json
 .pyre/
 outputs
 datasets
+wandb
 .DS_Store
+future_artifacts

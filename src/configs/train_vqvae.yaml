@@ -15,4 +15,6 @@ latent_loss_weight: 0.25
 net:
   in_channel: 1
 
+pretrained_weights: ''
+mode: train #train | extract | train_extract By default: train
 debug: True
