@@ -1,2 +1,2 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="taylor-fix" run_name="NoResize - Init Train" tags=[vq-vae2,taylor_fix]
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="udem-birds" run_name="NoResize - Init Train" tags=[vq-vae2,full_6_udem]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="taylor-fix" lr=0.0002 run_name="NoResize - Init Train" tags=[vq-vae2,taylor_fix]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="udem-birds" lr=0.0002 run_name="NoResize - Init Train" tags=[vq-vae2,full_6_udem]

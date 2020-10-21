@@ -6,6 +6,7 @@ dataset:
   root_dir: '/media/future/Rapido/Taylor'
   lmdb_path: ''
 
+  batch_size: 6
   classes_name: 
       - 'N_'
       - 'NE_'

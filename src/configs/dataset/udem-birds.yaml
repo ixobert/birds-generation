@@ -4,7 +4,7 @@ dataset:
   root_dir: '/media/future/Rapido/udem-birds/classes'
   lmdb_path: ''
 
-  batch_size: 2
+  batch_size: 6
   classes_name: 
     - 'AMGP_1(tu-tit)'
     - 'AMGP_2(tuuut)'
