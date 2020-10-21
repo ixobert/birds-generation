@@ -4,14 +4,28 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Train VQVAE",
             "type": "python",
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
             "console": "integratedTerminal",
-            "args": ["debug=True", "nb_epochs=5", "mode=extract"]
+            "args": ["debug=True", "nb_epochs=3", "mode=train_extract", "dataset.resize=false"]
 
+        },
+        {
+            "name": "Train Prior",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_prior.py",
+            "console": "integratedTerminal",
+            "args": ["debug=True",
+                     "nb_epochs=5",
+                     "dataset=udem-birds",
+                     "dataset.lmdb_path=/Users/test/Documents/Projects/Master/birds-generation/outputs/2020-10-20/23-03-58/latents.lmdb",
+                     "net.model_type=top"
+            ]
         }
     ]
 }
