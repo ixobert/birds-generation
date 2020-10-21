@@ -52,11 +52,10 @@ class VQEngine(pl.LightningModule):
         latent_loss = latent_loss.mean()
 
         loss, logs = self._compute_loss(target=img, output=out, latent_loss=latent_loss)
-        result = pl.TrainResult(minimize=loss)
-        result.log('loss', loss)
-        result.log_dict(logs)
+        self.log('loss', loss)
+        self.log_dict(logs)
         self.logger.experiment.log(logs)
-        return result
+        return logs
 
     def _generate(self, input):
         out = self.net(input, logits_only=True)
@@ -80,7 +79,7 @@ class VQEngine(pl.LightningModule):
 
     def training_epoch_end(self,*args, **kwargs):
         if self.current_epoch % 100 != 0:
-            return {}
+            return 
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
@@ -99,8 +98,6 @@ class VQEngine(pl.LightningModule):
             'input':         wandb.Image(input_grid),
             'reconstructed': wandb.Image(recon_grid),
         }, self.current_epoch)
-
-        return {}
 
 
 
@@ -125,7 +122,7 @@ def main(cfg: DictConfig) -> None:
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
-    engine.load_from_checkpoint(checkpoint_path='')
+    # engine.load_from_checkpoint(checkpoint_path='')
     checkpoint_callback = ModelCheckpoint('./models', monitor='loss', verbose=True)
     trainer = pl.Trainer(
         logger=logger,
@@ -134,11 +131,11 @@ def main(cfg: DictConfig) -> None:
         checkpoint_callback=checkpoint_callback,
     )
 
-    if cfg.get('mode', 'train') in ['train', 'train_extract']:
+    if 'train' in cfg.get('mode'):
         # Start training
         trainer.fit(engine, train_dataloader=train_dataloader)
 
-    elif 'extract' in cfg.get('mode'):
+    if 'extract' in cfg.get('mode'):
         trainer.max_steps = 1
         trainer.fit(engine, train_dataloader=train_dataloader)
         # Extract latent variables from the training samples.
