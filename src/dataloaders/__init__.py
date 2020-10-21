@@ -3,8 +3,23 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 try:
     from audiodataset import AudioDataset
+    from codebookdataset import LMDBDataset
 except ModuleNotFoundError:
     from .audiodataset import AudioDataset
+    from .codebookdataset import LMDBDataset
+
+
+class CodeBookDataModule(pl.LightningDataModule):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.config = kwargs.get('config')
+        self.batch_size = self.config.get('batch_size') #TODO: DO the same in train_vqvae
+    
+    def setup(self, stage=None):
+        self.dataset = LMDBDataset(data_path=self.config['lmdb_path'])
+
+    def train_dataloader(self):
+        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
 
 
 
