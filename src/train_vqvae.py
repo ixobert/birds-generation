@@ -122,8 +122,9 @@ def main(cfg: DictConfig) -> None:
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
-    # engine.load_from_checkpoint(checkpoint_path='')
-    checkpoint_callback = ModelCheckpoint('./models', monitor='loss', verbose=True)
+    if cfg.get('pretrained_weights', ''):
+        engine.load_from_checkpoint(checkpoint_path=cfg['pretrained_weights'])
+    checkpoint_callback = ModelCheckpoint('./models-vqvae', monitor='loss', verbose=True)
     trainer = pl.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
@@ -136,6 +137,7 @@ def main(cfg: DictConfig) -> None:
         trainer.fit(engine, train_dataloader=train_dataloader)
 
     if 'extract' in cfg.get('mode'):
+        print("Extract Latent Codes")
         trainer.max_steps = 1
         trainer.fit(engine, train_dataloader=train_dataloader)
         # Extract latent variables from the training samples.
