@@ -9,3 +9,6 @@ natsort
 librosa
 sklearn
 lmdb
+matplotlib
+streamlit
+sklearn

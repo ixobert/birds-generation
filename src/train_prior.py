@@ -58,6 +58,7 @@ class PriorEngine(pl.LightningModule):
 
         return label
 
+    @classmethod
     def _label_to_dense_tensor(self, labels, shape):
         out = []
         shape = [_ for _ in shape]

@@ -9,9 +9,11 @@ from tqdm import tqdm
 try:
     from networks import VQVAE
     from networks import PixelSNAIL
+    from train_prior.PriorEngine import _label_to_dense_tensor
 except ImportError:
     from src.networks import VQVAE
     from src.networks import PixelSNAIL
+    from src.train_prior.PriorEngine import _label_to_dense_tensor
 
 def _update_model_keys(old_model:OrderedDict):
     new_model = OrderedDict()
@@ -23,6 +25,7 @@ def _update_model_keys(old_model:OrderedDict):
     return new_model
 
 
+#TODO: Detach Row before return
 @torch.no_grad()
 def sample_model(model, device, batch, size, temperature, condition=None):
     row = torch.zeros(batch, *size, dtype=torch.int64).to(device)
@@ -34,7 +37,6 @@ def sample_model(model, device, batch, size, temperature, condition=None):
             prob = torch.softmax(out[:, :, i, j] / temperature, 1)
             sample = torch.multinomial(prob, 1).squeeze(-1)
             row[:, i, j] = sample
-
     return row
 
 
