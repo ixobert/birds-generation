@@ -58,26 +58,29 @@ class PriorEngine(pl.LightningModule):
 
         return label
 
+    @classmethod
     def _label_to_dense_tensor(self, labels, shape):
         out = []
         shape = [_ for _ in shape]
         shape[0] = 1
         for label in labels:
             temp=torch.Tensor()
-            torch.full(shape, label+1, out=temp)
+            torch.full(shape, label, out=temp)
             out.append(temp)
-        return torch.cat(out).to(torch.int64)
+        out = torch.cat(out).to(torch.int64)
+        return out
 
     def _step(self, batch, batch_idx):
         top, bottom, filepaths = batch
+        label_idx = torch.tensor([self._filepath_to_label(x) for x in filepaths]) + 1
+
         if self.hparams.net.model_type == 'top':
             target = top
-            label = torch.tensor([self._filepath_to_label(x) for x in filepaths])
-            label = self._label_to_dense_tensor(label, torch.tensor(top.shape)//2)
-            out, _ = self.net(top, condition=label)
+            label_tensor = self._label_to_dense_tensor(label_idx, torch.tensor(top.shape)//2)
+            out, _ = self.net(top, condition=label_tensor, condition_label=label_idx)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
-            out, _ = self.net(bottom, condition=top)
+            out, _ = self.net(bottom, condition=top, condition_label=label_idx)
         else:
             print("Only top and bottom are supported for model_type") 
             raise ValueError
@@ -110,7 +113,7 @@ class PriorEngine(pl.LightningModule):
 
 @hydra.main(config_path="configs", config_name="train_prior")
 def main(cfg: DictConfig) -> None:
-    # cfg['net']['n_class'] = len(cfg['dataset']['classes_name'])
+    cfg['net']['num_classes_labels'] = len(cfg['dataset']['classes_name'])
     if cfg['net']['model_type'] =='top':
         cfg['net']['shape'] = [16, 16]
     else:

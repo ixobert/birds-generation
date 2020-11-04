@@ -386,6 +386,7 @@ class PixelSNAIL(nn.Module):
             self.cond_resnet = CondResNet(
                 n_class, cond_res_channel, cond_res_kernel, n_cond_res_block
             )
+            self.label_embedding = nn.Embedding(kwargs.get('num_classes_labels')+1, cond_res_channel)
 
         out = []
 
@@ -396,7 +397,7 @@ class PixelSNAIL(nn.Module):
 
         self.out = nn.Sequential(*out)
 
-    def forward(self, input, condition=None, cache=None):
+    def forward(self, input, condition=None, cache=None, condition_label=None):
         if cache is None:
             cache = {}
         batch, height, width = input.shape
@@ -421,6 +422,12 @@ class PixelSNAIL(nn.Module):
                     .type_as(self.background)
                 )
                 condition = self.cond_resnet(condition)
+                #Class Conditioning
+                condition_label = self.label_embedding(condition_label) #NC
+                condition_label.unsqueeze_(-1) #NCH
+                condition_label.unsqueeze_(-1) # NCHW
+                condition = condition * condition_label
+
                 condition = F.interpolate(condition, scale_factor=2)
                 cache['condition'] = condition.detach().clone()
                 condition = condition[:, :, :height, :]

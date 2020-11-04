@@ -130,6 +130,7 @@ class AudioDataset():
                 spectrogram = cv2.resize(spectrogram, resize)
             else:
                 spectrogram = cv2.resize(spectrogram,(64,128))
+        print("Mel shape", spectrogram.shape)
         s = librosa.feature.inverse.mel_to_stft(spectrogram)
         y = librosa.griffinlim(s)
         return y

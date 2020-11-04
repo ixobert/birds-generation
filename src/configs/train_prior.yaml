@@ -26,6 +26,7 @@ net:
   cond_res_channel: 256
   cond_res_kernel: 3
   n_out_res_block: 0
+  num_classes_labels: 0
 
 pretrained_weights: ''
 mode: train #train | extract | train_extract By default: train
