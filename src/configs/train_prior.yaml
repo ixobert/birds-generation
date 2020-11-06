@@ -33,5 +33,4 @@ net:
   num_classes_labels: 0
 
 pretrained_weights: ''
-artifacts_directory: ''
 debug: True
