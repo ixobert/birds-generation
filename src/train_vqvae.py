@@ -104,6 +104,9 @@ class VQEngine(pl.LightningModule):
 @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
     print(cfg)
+    import json
+    with open('config.json', 'w') as fp:
+        json.dump(cfg, fp)
     current_folder = os.getcwd()
     print("Current Folder", current_folder)
 
