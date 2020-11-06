@@ -1,3 +1,4 @@
+import logging
 import os
 from math import radians
 from threading import Condition
@@ -118,7 +119,7 @@ def main(cfg: DictConfig) -> None:
         cfg['net']['shape'] = [16, 16]
     else:
         cfg['net']['shape'] = [32, 32]
-    print(cfg)
+    logging.info(cfg)
     current_folder = os.getcwd()
     cfg['artifacts_directory'] = current_folder
     print("Current Folder", current_folder)

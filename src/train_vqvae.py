@@ -1,3 +1,4 @@
+import logging
 import os
 os.environ['HYDRA_FULL_ERROR'] = '1'
 from argparse import Namespace
@@ -103,10 +104,7 @@ class VQEngine(pl.LightningModule):
 
 @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
-    print(cfg)
-    import json
-    with open('config.json', 'w') as fp:
-        json.dump(dict(cfg), fp)
+    logging.info(cfg)
     current_folder = os.getcwd()
     print("Current Folder", current_folder)
 
