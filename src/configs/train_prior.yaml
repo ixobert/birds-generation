@@ -1,5 +1,9 @@
 defaults: 
   - dataset: udem-birds
+working_dir: './outputs'
+hydra:
+  run:
+    dir: ${working_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
 git_hash: ''
 project_name: birds-audio-generation
@@ -13,7 +17,7 @@ nb_epochs: 1000
 lr: 0.00002
 net:
   model_type: top
-  shape: [32, 4] # Overrided in the code.
+  shape: [32, ] # Overrided in the code.
   n_class: 512
   channel: 256
   kernel_size: 5
