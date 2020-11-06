@@ -106,7 +106,7 @@ def main(cfg: DictConfig) -> None:
     print(cfg)
     import json
     with open('config.json', 'w') as fp:
-        json.dump(cfg, fp)
+        json.dump(dict(cfg), fp)
     current_folder = os.getcwd()
     print("Current Folder", current_folder)
 
