@@ -132,7 +132,7 @@ def main(cfg: DictConfig) -> None:
     train_dataloader = CodeBookDataModule(config=cfg['dataset'])
 
     engine = PriorEngine(Namespace(**cfg))
-    checkpoint_callback = ModelCheckpoint("./models-prior-{prior}-{cfg['net']['model_type']}", monitor='loss', verbose=True)
+    checkpoint_callback = ModelCheckpoint(f"./models-prior-{cfg['net']['model_type']}", monitor='loss', verbose=True)
     trainer = pl.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
