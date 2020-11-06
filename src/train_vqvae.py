@@ -105,6 +105,7 @@ class VQEngine(pl.LightningModule):
 def main(cfg: DictConfig) -> None:
     print(cfg)
     current_folder = os.getcwd()
+    cfg['artifacts_directory'] = current_folder
     print("Current Folder", current_folder)
 
     # _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')

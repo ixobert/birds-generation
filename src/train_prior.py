@@ -120,6 +120,7 @@ def main(cfg: DictConfig) -> None:
         cfg['net']['shape'] = [32, 32]
     print(cfg)
     current_folder = os.getcwd()
+    cfg['artifacts_directory'] = current_folder
     print("Current Folder", current_folder)
 
     if cfg.get('debug', False):

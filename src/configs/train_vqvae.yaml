@@ -17,4 +17,5 @@ net:
 
 pretrained_weights: ''
 mode: train_extract #train | extract | train_extract By default: train
+artifacts_directory: ''
 debug: True

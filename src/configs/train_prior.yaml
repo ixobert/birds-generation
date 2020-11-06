@@ -13,7 +13,7 @@ nb_epochs: 1000
 lr: 0.00002
 net:
   model_type: top
-  shape: [32, 4]
+  shape: [32, 4] # Overrided in the code.
   n_class: 512
   channel: 256
   kernel_size: 5
@@ -29,5 +29,5 @@ net:
   num_classes_labels: 0
 
 pretrained_weights: ''
-mode: train #train | extract | train_extract By default: train
+artifacts_directory: ''
 debug: True
