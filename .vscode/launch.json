@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
             "console": "integratedTerminal",
-            "args": ["debug=True", "nb_epochs=1", "mode=extract", "dataset.resize=false", "pretrained_weights=/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36/models-v0.ckpt"]
+            "args": ["debug=True", "nb_epochs=1", "mode=extract", "dataset.resize=false", "pretrained_weights=/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36-udem-birds/models-vqvae-v0.ckpt"]
 
         },
         {

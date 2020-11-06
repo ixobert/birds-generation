@@ -139,12 +139,11 @@ def main(cfg: DictConfig) -> None:
 
     if 'extract' in cfg.get('mode'):
         print("Extract Latent Codes")
-        trainer.max_steps = 1
-        trainer.fit(engine, train_dataloader=train_dataloader)
+        train_dataloader.setup()
         # Extract latent variables from the training samples.
         map_size = 1000 * 1024*1024*1024
         env = lmdb.open('./latents.lmdb', map_size=map_size)
-        extract_latent(lmdb_env=env, net=engine.net, dataloader=engine.train_dataloader())
+        extract_latent(lmdb_env=env, net=engine.net, dataloader=train_dataloader.train_dataloader())
         
 
 if __name__ == "__main__":
