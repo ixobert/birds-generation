@@ -74,6 +74,7 @@ class PriorEngine(pl.LightningModule):
     def _step(self, batch, batch_idx):
         top, bottom, filepaths = batch
         label_idx = torch.tensor([self._filepath_to_label(x) for x in filepaths]) + 1
+        label_idx = label_idx.to(top.device)
 
         if self.hparams.net.model_type == 'top':
             target = top
