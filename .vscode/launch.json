@@ -14,6 +14,20 @@
 
         },
         {
+            "name": "Train VQVAE-faces94",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
+            "console": "integratedTerminal",
+            "args": ["debug=True",
+                     "nb_epochs=1", 
+                     "mode=train_extract", 
+                     "dataset=faces94-female",
+                     "dataset.num_workers=0"
+            ]
+        },
+
+        {
             "name": "Train Prior",
             "type": "python",
             "request": "launch",

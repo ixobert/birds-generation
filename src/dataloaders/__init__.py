@@ -2,9 +2,11 @@ import os
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 try:
+    from imagedataset import ImageDataset
     from audiodataset import AudioDataset
     from codebookdataset import LMDBDataset
 except ModuleNotFoundError:
+    from .imagedataset import ImageDataset
     from .audiodataset import AudioDataset
     from .codebookdataset import LMDBDataset
 
@@ -21,6 +23,28 @@ class CodeBookDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
 
+
+class ImagesDataModule(pl.LightningDataModule):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.config = kwargs.get('config')
+        self.batch_size = self.config.get('batch_size', 2)
+    
+    def setup(self, stage=None):
+        #################
+        #TODO: To delete: this code makes my life easier during development
+        import sys
+        platform = sys.platform.lower()
+        print(f"Running on : {platform}")
+        if platform == 'darwin':
+            root_ = "/Users/test/Documents/Projects/Master/"
+            self.config['root_dir'] = os.path.join(root_, "faces94/female")
+            self.config['train_path'] = os.path.join(root_, "faces94/female_train.txt")
+        #################
+        self.dataset = ImageDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'])
+    
+    def train_dataloader(self):
+        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
 
 
 class SpectrogramsDataModule(pl.LightningDataModule):

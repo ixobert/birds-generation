@@ -13,6 +13,7 @@ from pytorch_lightning.loggers import WandbLogger as Logger
 from pytorch_lightning.callbacks import ModelCheckpoint
 import networks
 from dataloaders import SpectrogramsDataModule
+from dataloaders import ImagesDataModule
 import wandb
 import lmdb
 from utils.helpers import extract_latent
@@ -120,7 +121,7 @@ def main(cfg: DictConfig) -> None:
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
-    train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
+    train_dataloader = ImagesDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
     if cfg.get('pretrained_weights', ''):
