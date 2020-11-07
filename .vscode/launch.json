@@ -37,8 +37,8 @@
             "args": ["working_dir=./outputs",
                      "debug=True",
                      "nb_epochs=5",
-                     "dataset=udem-birds",
-                     "dataset.lmdb_path=/Users/test/Documents/Projects/Master/birds-generation/outputs/2020-10-22/21-01-11/latents.lmdb",
+                     "dataset=faces94-female",
+                     "dataset.lmdb_path=/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-11-07/02-34-20/latents.lmdb",
                      "net.model_type=top"
             ]
         },
