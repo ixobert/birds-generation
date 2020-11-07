@@ -1,0 +1,18 @@
+dataset:
+  num_workers: 2
+  train_path: '/home/future/Documents/Datasets/faces94/female_train.txt'
+  root_dir:   '/home/future/Documents/Datasets/faces94/female'
+  lmdb_path: ''
+
+  batch_size: 6
+  classes_name: 
+    - 'anpage'
+    - 'asewil'
+    - 'phughe'
+    - 'sbains'
+    - 'yfhsie'
+
+  resize: false
+  return_tuple: true
+  sr: 16384
+  use_mel: true
