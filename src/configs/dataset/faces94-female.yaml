@@ -1,7 +1,7 @@
 dataset:
   num_workers: 2
-  train_path: '/home/future/Documents/Datasets/faces94/female_train.txt'
-  root_dir:   '/home/future/Documents/Datasets/faces94/female'
+  train_path: '/home/future/Documents/Datasets/FacesDataset/Face_Recognition/faces94/female_train.txt'
+  root_dir:   '│home/future/Documents/Datasets/FacesDataset/Face_Recognition/faces94/female'
   lmdb_path: ''
 
   batch_size: 6
