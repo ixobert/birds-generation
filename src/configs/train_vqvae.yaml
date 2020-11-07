@@ -1,6 +1,6 @@
 defaults:
   - dataset: udem-birds 
-working_dir: './outputs'
+working_dir: '/home/future/Documents/runs_articfacts/birds-generation/outputs'
 hydra:
   run:
     dir: ${working_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}

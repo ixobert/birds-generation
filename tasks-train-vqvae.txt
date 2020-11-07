@@ -1,1 +1,1 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py working_dir="/home/future/Documents/runs_articfacts/birds-generation/outputs" +gpus=[0] debug=false dataset="faces94-female" lr=0.0002 run_name="NoResize - Init Train" tags=[vq-vae2,faces94-female]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="faces94-female" lr=0.0002 run_name="NoResize - Init Train" tags=[vq-vae2,faces94-female]
