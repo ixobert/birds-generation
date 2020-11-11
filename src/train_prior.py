@@ -139,6 +139,8 @@ def main(cfg: DictConfig) -> None:
         max_epochs=cfg.get('nb_epochs', 3),
         checkpoint_callback=checkpoint_callback,
     )
+    
+    logger.log_hyperparams(cfg)
 
     # Start training
     trainer.fit(engine, train_dataloader=train_dataloader)

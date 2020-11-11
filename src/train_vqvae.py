@@ -133,6 +133,7 @@ def main(cfg: DictConfig) -> None:
         max_epochs=cfg.get('nb_epochs', 3),
         checkpoint_callback=checkpoint_callback,
     )
+    logger.log_hyperparams(cfg)
 
     if 'train' in cfg.get('mode'):
         # Start training
@@ -140,7 +141,6 @@ def main(cfg: DictConfig) -> None:
 
     if 'extract' in cfg.get('mode'):
         print("Extract Latent Codes")
-        logger.log_hyperparams(cfg)
         train_dataloader.setup()
         # Extract latent variables from the training samples.
         map_size = 1000 * 1024*1024*1024
