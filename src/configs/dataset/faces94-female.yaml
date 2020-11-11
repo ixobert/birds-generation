@@ -6,11 +6,26 @@ dataset:
 
   batch_size: 6
   classes_name: 
-    - 'anpage'
-    - 'asewil'
     - 'phughe'
     - 'sbains'
+    - '9336923'
+    - 'klclar'
+    - 'astefa'
+    - 'slbirc'
+    - 'asewil'
+    - 'kaknig'
     - 'yfhsie'
+    - 'asamma'
+    - 'vstros'
+    - 'lfso'
+    - 'drbost'
+    - 'ksunth'
+    - 'gotone'
+    - 'anpage'
+    - 'elduns'
+    - 'ekavaz'
+    - '9338535'
+    - 'mbutle'
 
   resize: false
   return_tuple: true
