@@ -79,10 +79,10 @@ class PriorEngine(pl.LightningModule):
         if self.hparams.net.model_type == 'top':
             target = top
             label_tensor = self._label_to_dense_tensor(label_idx, torch.tensor(top.shape)//2)
-            out, _ = self.net(top, condition=label_tensor, condition_label=label_idx)
+            out, _ = self.net(top)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
-            out, _ = self.net(bottom, condition=top, condition_label=label_idx)
+            out, _ = self.net(bottom, condition=top)
         else:
             print("Only top and bottom are supported for model_type") 
             raise ValueError

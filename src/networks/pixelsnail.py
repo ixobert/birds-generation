@@ -422,11 +422,11 @@ class PixelSNAIL(nn.Module):
                     .type_as(self.background)
                 )
                 condition = self.cond_resnet(condition)
-                #Class Conditioning
-                condition_label = self.label_embedding(condition_label) #NC
-                condition_label.unsqueeze_(-1) #NCH
-                condition_label.unsqueeze_(-1) # NCHW
-                condition = condition * condition_label
+                # #Class Conditioning
+                # condition_label = self.label_embedding(condition_label) #NC
+                # condition_label.unsqueeze_(-1) #NCH
+                # condition_label.unsqueeze_(-1) # NCHW
+                # condition = condition * condition_label
 
                 condition = F.interpolate(condition, scale_factor=2)
                 cache['condition'] = condition.detach().clone()
