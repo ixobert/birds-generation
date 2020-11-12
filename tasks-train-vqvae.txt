@@ -1,1 +1,1 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="faces94-female" lr=0.0002 batch_size=64 nb_epochs=30000 run_name="NoResize - Init Train" tags=[vq-vae2,faces94-female]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="faces94-female" num_workers=10 lr=0.0002 batch_size=64 nb_epochs=30000 run_name="NoResize - Init Train" tags=[vq-vae2,faces94-female]
