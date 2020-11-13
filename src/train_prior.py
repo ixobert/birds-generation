@@ -1,7 +1,6 @@
 import logging
 import os
 from math import radians
-from threading import Condition
 
 os.environ['HYDRA_FULL_ERROR'] = '1'
 from argparse import Namespace
@@ -79,7 +78,7 @@ class PriorEngine(pl.LightningModule):
         if self.hparams.net.model_type == 'top':
             target = top
             label_tensor = self._label_to_dense_tensor(label_idx, torch.tensor(top.shape)//2)
-            out, _ = self.net(top)
+            out, _ = self.net(top, condition=label_tensor)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
             out, _ = self.net(bottom, condition=top)
