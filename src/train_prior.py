@@ -78,7 +78,7 @@ class PriorEngine(pl.LightningModule):
         if self.hparams.net.model_type == 'top':
             target = top
             label_tensor = self._label_to_dense_tensor(label_idx, torch.tensor(top.shape)//2)
-            out, _ = self.net(top, condition=label_tensor)
+            out, _ = self.net(top)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
             out, _ = self.net(bottom, condition=top)
@@ -117,6 +117,7 @@ def main(cfg: DictConfig) -> None:
     cfg['net']['num_classes_labels'] = len(cfg['dataset']['classes_name'])
     if cfg['net']['model_type'] =='top':
         cfg['net']['shape'] = [16, 16]
+        cfg['net']['attention'] = True
     else:
         cfg['net']['shape'] = [32, 32]
     logging.info(cfg)
