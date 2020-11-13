@@ -339,6 +339,7 @@ class PixelSNAIL(nn.Module):
         cond_res_channel=0,
         cond_res_kernel=3,
         n_out_res_block=0,
+        **kwargs
     ):
         super().__init__()
 
