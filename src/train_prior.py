@@ -80,7 +80,7 @@ class PriorEngine(pl.LightningModule):
             out, _ = self.net(top)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
-            out, _ = self.net(bottom, condition=top)
+            out, _ = self.net(bottom, condition=top, condition_label=label_idx)
         else:
             print("Only top and bottom are supported for model_type") 
             raise ValueError
