@@ -118,9 +118,6 @@ def main(cfg: DictConfig) -> None:
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
-    logging.info(cfg)
-    current_folder = os.getcwd()
-    logging.info(f"Current Folder:{current_folder}")
 
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
@@ -135,6 +132,10 @@ def main(cfg: DictConfig) -> None:
         checkpoint_callback=checkpoint_callback,
     )
     logger.log_hyperparams(cfg)
+
+    logging.info(cfg)
+    current_folder = os.getcwd()
+    logging.info(f"Current Folder:{current_folder}")
 
     if 'train' in cfg.get('mode'):
         # Start training

@@ -125,9 +125,6 @@ def main(cfg: DictConfig) -> None:
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
-    logging.info(cfg)
-    current_folder = os.getcwd()
-    print("Current Folder", current_folder)
 
     train_dataloader = CodeBookDataModule(config=cfg['dataset'])
 
@@ -141,6 +138,9 @@ def main(cfg: DictConfig) -> None:
     )
     
     logger.log_hyperparams(cfg)
+    logging.info(cfg)
+    current_folder = os.getcwd()
+    print("Current Folder", current_folder)
 
     # Start training
     trainer.fit(engine, train_dataloader=train_dataloader)
