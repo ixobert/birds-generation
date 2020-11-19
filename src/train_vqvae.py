@@ -107,7 +107,7 @@ class VQEngine(pl.LightningModule):
 def main(cfg: DictConfig) -> None:
     logging.info(cfg)
     current_folder = os.getcwd()
-    print("Current Folder", current_folder)
+    logging.info("Current Folder", current_folder)
 
     # _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')
     # print(_git_hash_file)
@@ -140,7 +140,7 @@ def main(cfg: DictConfig) -> None:
         trainer.fit(engine, train_dataloader=train_dataloader)
 
     if 'extract' in cfg.get('mode'):
-        print("Extract Latent Codes")
+        logging.info("Extract Latent Codes")
         train_dataloader.setup()
         # Extract latent variables from the training samples.
         map_size = 1000 * 1024*1024*1024
