@@ -119,14 +119,15 @@ def main(cfg: DictConfig) -> None:
         cfg['net']['attention'] = True
     else:
         cfg['net']['shape'] = [32, 32]
-    logging.info(cfg)
-    current_folder = os.getcwd()
-    print("Current Folder", current_folder)
 
     if cfg.get('debug', False):
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+
+    logging.info(cfg)
+    current_folder = os.getcwd()
+    print("Current Folder", current_folder)
 
     train_dataloader = CodeBookDataModule(config=cfg['dataset'])
 

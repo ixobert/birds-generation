@@ -105,9 +105,6 @@ class VQEngine(pl.LightningModule):
 
 @hydra.main(config_path="configs", config_name="train_vqvae")
 def main(cfg: DictConfig) -> None:
-    logging.info(cfg)
-    current_folder = os.getcwd()
-    logging.info(f"Current Folder:{current_folder}")
 
     # _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')
     # print(_git_hash_file)
@@ -120,6 +117,10 @@ def main(cfg: DictConfig) -> None:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
+
+    logging.info(cfg)
+    current_folder = os.getcwd()
+    logging.info(f"Current Folder:{current_folder}")
 
     train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
