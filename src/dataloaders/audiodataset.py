@@ -153,7 +153,7 @@ class AudioDataset():
 
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
-        logging.info(file_path)
+        logging.info(f"**{file_path}**")
         if len(audio) >= self.window_length:
             audio = audio[0:self.window_length]
         else:
