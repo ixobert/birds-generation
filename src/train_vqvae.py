@@ -121,7 +121,7 @@ def main(cfg: DictConfig) -> None:
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
-    train_dataloader = ImagesDataModule(config=cfg['dataset'])
+    train_dataloader = SpectrogramsDataModule(config=cfg['dataset'])
 
     engine = VQEngine(Namespace(**cfg))
     if cfg.get('pretrained_weights', ''):
