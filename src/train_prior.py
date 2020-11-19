@@ -77,7 +77,11 @@ class PriorEngine(pl.LightningModule):
 
         if self.hparams.net.model_type == 'top':
             target = top
-            out, _ = self.net(top)
+            condition_shape = [_ for _ in top.shape]
+            condition_shape[-1] //= 2
+            condition_shape[-2] //= 2
+            condition = torch.ones(condition_shape, dtype=top.dtype).to(top.device)
+            out, _ = self.net(top, condition=condition, condition_label=label_idx)
         elif self.hparams.net.model_type == 'bottom':
             target = bottom 
             out, _ = self.net(bottom, condition=top, condition_label=label_idx)

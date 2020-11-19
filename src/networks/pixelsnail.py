@@ -11,6 +11,7 @@ from functools import partial, lru_cache
 import numpy as np
 import torch
 from torch import nn
+from torch._C import dtype
 from torch.nn import functional as F
 
 
@@ -426,7 +427,7 @@ class PixelSNAIL(nn.Module):
                 condition_label.unsqueeze_(-1) #NCH
                 condition_label.unsqueeze_(-1) # NCHW
                 condition = condition * condition_label
-                condition = F.interpolate(condition, scale_factor=2)
+                condition = F.interpolate(condition, scale_factor=2) #TODO: Try applying the condition_label before the upscale.
                 cache['condition'] = condition.detach().clone()
                 condition = condition[:, :, :height, :]
 
