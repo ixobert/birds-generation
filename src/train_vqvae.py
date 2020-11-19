@@ -107,7 +107,7 @@ class VQEngine(pl.LightningModule):
 def main(cfg: DictConfig) -> None:
     logging.info(cfg)
     current_folder = os.getcwd()
-    logging.info("Current Folder", current_folder)
+    logging.info(f"Current Folder:{current_folder}")
 
     # _git_hash_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'git_hash.txt')
     # print(_git_hash_file)
