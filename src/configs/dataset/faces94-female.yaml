@@ -4,7 +4,7 @@ dataset:
   root_dir:   '/home/future/Documents/Datasets/FacesDataset/Face_Recognition/faces94/female'
   lmdb_path: ''
 
-  batch_size: 6
+  batch_size: 32
   classes_name: 
     - 'phughe'
     - 'sbains'
