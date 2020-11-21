@@ -112,6 +112,7 @@ class AudioDataset():
     def audio_to_melspectrogram(self, audio, resize=True):
         "This function only works for image with one channel"
         features = librosa.feature.melspectrogram(y=audio, n_fft=1024)
+        features = librosa.power_to_db(features)
         if resize:
             features = cv2.resize(features,(32,256))
         #If height is odd, skip the first column
@@ -132,6 +133,7 @@ class AudioDataset():
             else:
                 spectrogram = cv2.resize(spectrogram,(64,128))
         print("Mel shape", spectrogram.shape)
+        spectrogram = librosa.db_to_power(spectrogram)
         s = librosa.feature.inverse.mel_to_stft(spectrogram)
         y = librosa.griffinlim(s)
         return y
@@ -177,8 +179,6 @@ class AudioDataset():
             else:
                 features = self.audio_to_specgram(audio, resize=self.resize)
             # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
-            for i in range(len(features)):
-                features[i] = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features[i])
         else:
             features = audio
 

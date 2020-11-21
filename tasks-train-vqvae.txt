@@ -1,1 +1,2 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="faces94-female" num_workers=10 lr=0.0002 dataset.batch_size=64 nb_epochs=30000 run_name="NoResize - Init Train" tags=[vq-vae2,faces94-female]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[0] debug=false dataset="udem-birds" lr=0.0002 nb_epochs=30000 run_name="NoResize - Train preprocess,power_db_power" tags=[vq-vae2,full_6_udem]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="taylor-fix" lr=0.0002 nb_epochs=30000 run_name="NoResize - Train preprocess,power_db_power" tags=[vq-vae2,taylor_fix]
