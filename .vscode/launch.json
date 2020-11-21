@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Train VQVAE",
+            "name": "Train VQVAE-extract",
             "type": "python",
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
