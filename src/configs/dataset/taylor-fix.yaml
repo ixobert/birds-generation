@@ -1,5 +1,5 @@
 dataset:
-  num_workers: 2
+  num_workers: 6
   train_path: '/media/future/Rapido/Taylor/train_list2.txt'
   val_path: '/media/future/Rapido/Taylor/train_list2.txt'
   root_dir: '/media/future/Rapido/Taylor'
