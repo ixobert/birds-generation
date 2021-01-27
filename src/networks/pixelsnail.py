@@ -412,24 +412,18 @@ class PixelSNAIL(nn.Module):
         background = self.background[:, :, :height, :].expand(batch, 2, height, width)
 
         if condition is not None:
-            if 'condition' in cache:
-                condition = cache['condition']
-                condition = condition[:, :, :height, :]
-
-            else:
-                condition = (
-                    F.one_hot(condition, self.n_class)
-                    .permute(0, 3, 1, 2)
-                    .type_as(self.background)
-                )
-                condition = self.cond_resnet(condition)
-                condition_label = self.label_embedding(condition_label) #NC
-                condition_label.unsqueeze_(-1) #NCH
-                condition_label.unsqueeze_(-1) # NCHW
-                condition = condition * condition_label
-                condition = F.interpolate(condition, scale_factor=2) #TODO: Try applying the condition_label before the upscale.
-                cache['condition'] = condition.detach().clone()
-                condition = condition[:, :, :height, :]
+            condition = (
+                F.one_hot(condition, self.n_class)
+                .permute(0, 3, 1, 2)
+                .type_as(self.background)
+            )
+            condition = self.cond_resnet(condition)
+            condition_label = self.label_embedding(condition_label) #NC
+            condition_label.unsqueeze_(-1) #NCH
+            condition_label.unsqueeze_(-1) # NCHW
+            condition = condition * condition_label
+            condition = F.interpolate(condition, scale_factor=2) #TODO: Try applying the condition_label before the upscale.
+            condition = condition[:, :, :height, :]
 
         for block in self.blocks:
             out = block(out, background, condition=condition)
