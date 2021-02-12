@@ -76,7 +76,12 @@ class AudioDataset():
                 data = pickle.load(reader)
         else:
             print("Create cached Data", files_hash)
-            data = [(file_path, librosa.load(file_path, sr=sr)[0]) for file_path in files_path]
+            data = []
+            for file_path in files_path:
+                audio, _sr = librosa.load(file_path, sr=sr)
+                if _sr != sr:
+                    audio = librosa.resample(audio, _sr, sr)
+                data.append((file_path, audio))
             with open(cache_file_path, 'wb') as writer:
                 pickle.dump(data, writer)
         return data
