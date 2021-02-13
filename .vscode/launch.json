@@ -23,7 +23,7 @@
                      "debug=True",
                      "nb_epochs=10", 
                      "mode=train_extract", 
-                     "dataset=british-birds",
+                     "dataset=udem-birds",
                      "dataset.num_workers=0"
             ]
         },
