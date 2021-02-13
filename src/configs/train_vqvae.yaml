@@ -17,6 +17,7 @@ lr: 0.00002
 latent_loss_weight: 0.25
 net:
   in_channel: 1
+log_frequency: 10
 
 pretrained_weights: ''
 mode: train_extract #train | extract | train_extract By default: train

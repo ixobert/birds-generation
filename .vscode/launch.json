@@ -24,6 +24,7 @@
                      "nb_epochs=10", 
                      "mode=train_extract", 
                      "dataset=udem-birds",
+                     "log_frequency=1",
                      "dataset.num_workers=0"
             ]
         },
