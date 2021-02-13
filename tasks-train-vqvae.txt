@@ -1,1 +1,1 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="british-birds" lr=0.0002 nb_epochs=5000 dataset.batch_size=100 dataset.num_workers=10 run_name="Full Training -Dataset A"  tags=[vq-vae2,british-birds]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="british-birds" lr=0.0002 nb_epochs=5000 dataset.batch_size=500 dataset.num_workers=10 run_name="Full Training -Dataset A"  tags=[vq-vae2,british-birds]
