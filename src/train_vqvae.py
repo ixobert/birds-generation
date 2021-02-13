@@ -64,7 +64,6 @@ class VQEngine(pl.LightningModule):
     def _generate(self, input):
         quant_top, quant_bottom, diff, id_top, id_bottom = self.net.encode(input)
         out = self.net.decode(quant_top, quant_bottom)
-
         return out.detach().cpu(), id_top.long().detach().cpu(), id_bottom.long().detach().cpu()
 
     def _remove_dim(self, input):
@@ -98,11 +97,11 @@ class VQEngine(pl.LightningModule):
 
     def training_epoch_end(self,*args, **kwargs):
         # epoch = self.current_epoch
-        if self.current_epoch % 2 != 0:
+        if self.current_epoch % 100 != 0:
             return 
         if 'sample' not in self.cache:
             return
-        sample = self.cache['sample']
+        sample = self.cache['sample'][0:20] #Just use the first 20 samples
 
         out, codebook_top, codebook_bottom = self._generate(sample)
 
