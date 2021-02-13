@@ -71,12 +71,14 @@ class VQEngine(pl.LightningModule):
             return input.squeeze(1)
         return input
     
-    def _convert_grid_to_img(self, grid, name, save=False):
-        from PIL import Image
-        ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
-        im = Image.fromarray(ndarr)
-        if save:
-            im.save(name)
+    def _convert_grid_to_img(self, grid, outfile=None):
+        ndarr = grid.permute(1,2,0).numpy()
+        if outfile:
+            from PIL import Image
+            ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu').numpy()
+            im = ndarr.astype('uint8')
+            im = Image.fromarray(im)
+            im.save(outfile)
         return ndarr
 
     def training_epoch_end(self,*args, **kwargs):
@@ -85,21 +87,21 @@ class VQEngine(pl.LightningModule):
         out = self._generate(self.sample)
         out = self._remove_dim(out)
 
-        os.makedirs('./outs', exist_ok=True)
-        os.makedirs('./samples', exist_ok=True)
-        torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
-        torch.save(self.sample, f'./samples/{str(self.current_epoch)}.tmp')
+        # os.makedirs('./outs', exist_ok=True)
+        # os.makedirs('./samples', exist_ok=True)
+        # torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
+        # torch.save(self.sample, f'./samples/{str(self.current_epoch)}.tmp')
 
         input_grid = make_grid(self._remove_dim(self.sample).cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
         recon_grid = make_grid(out.detach().cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
 
-        input_grid = self._convert_grid_to_img(input_grid, './input.png', save=True) #Need to set save to True if you want to save the image
-        recon_grid = self._convert_grid_to_img(recon_grid, './recon.png', save=True)
+        input_grid = self._convert_grid_to_img(input_grid) #Need to set save to True if you want to save the image
+        recon_grid = self._convert_grid_to_img(recon_grid)
         
         self.logger.experiment.log({
             'input':         wandb.Image(input_grid),
             'reconstructed': wandb.Image(recon_grid),
-        }, self.current_epoch)
+        })
 
 
 
