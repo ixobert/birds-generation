@@ -56,9 +56,6 @@ class VQEngine(pl.LightningModule):
         latent_loss = latent_loss.mean()
 
         loss, logs = self._compute_loss(target=img, output=out, latent_loss=latent_loss)
-        self.log('loss', loss)
-        self.log_dict(logs)
-        self.logger.experiment.log(logs)
         return logs
 
     def _generate(self, input):
@@ -95,7 +92,7 @@ class VQEngine(pl.LightningModule):
         return fig
 
 
-    def training_epoch_end(self,*args, **kwargs):
+    def training_epoch_end(self, outputs):
         # epoch = self.current_epoch
         if self.current_epoch % self.hparams['log_frequency'] != 0:
             return 
@@ -116,7 +113,7 @@ class VQEngine(pl.LightningModule):
         input_grid = self._convert_grid_to_img(input_grid) 
         recon_grid = self._convert_grid_to_img(recon_grid)
 
-        self.logger.experiment.log({
+        logs = {
             'top_codebook': 100.0*len(torch.unique(codebook_top, sorted=False))/self.net.n_embed,
             'bottom_codebook': 100.0*len(torch.unique(codebook_bottom, sorted=False))/self.net.n_embed,
             'top_codebook_hist': wandb.Histogram(codebook_top.view(-1), num_bins=self.net.n_embed),
@@ -125,7 +122,11 @@ class VQEngine(pl.LightningModule):
                 wandb.Image(input_grid, caption='Input'), 
                 wandb.Image(recon_grid, caption='Reconstructed'),
                 ]
-        })
+        }
+        for metric_name in outputs[0].keys():
+            logs.update({metric_name: torch.stack([x[metric_name] for x in outputs]).mean().item()})
+ 
+        self.log_dict(logs)
 
 
 
