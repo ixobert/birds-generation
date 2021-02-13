@@ -1,0 +1,15 @@
+dataset:
+  num_workers: 6
+  train_path: '/media/future/Rapido/british-birdsong-dataset/songs/train.txt'
+  val_path: '/media/future/Rapido/british-birdsong-dataset/songs/val.txt'
+  root_dir: '/media/future/Rapido/british-birdsong-dataset/songs'
+  lmdb_path: ''
+
+  batch_size: 6
+  classes_name: 
+      - segments
+
+  resize: false
+  return_tuple: true
+  sr: 16384
+  use_mel: true

@@ -14,16 +14,16 @@
 
         },
         {
-            "name": "Train VQVAE-faces94",
+            "name": "Train VQVAE",
             "type": "python",
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
             "console": "integratedTerminal",
             "args": ["working_dir=./outputs", 
                      "debug=True",
-                     "nb_epochs=1", 
+                     "nb_epochs=10", 
                      "mode=train_extract", 
-                     "dataset=faces94-female",
+                     "dataset=british-birds",
                      "dataset.num_workers=0"
             ]
         },
