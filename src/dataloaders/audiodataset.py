@@ -52,9 +52,9 @@ class AudioDataset():
         self.data = [ x for x in self.data if True in [class_ in x[0] for class_ in classes_name] ]
         random.shuffle(self.data)
             # self.data = random.sample(self.data, k=min(len(self.data),10))  # For debugging
-        print("Data initialization done", len(self.data))
+        logging.info(f"Data initialization done {len(self.data)}")
         if len(self.data) < 1:
-            print("Empty dataset")
+            logging.info("Empty dataset")
             raise ValueError
 
     def __len__(self):
@@ -71,11 +71,11 @@ class AudioDataset():
         cache_file_path = os.path.join(cache_folder, files_hash)
         os.makedirs(cache_folder, exist_ok=True)
         if os.path.isfile(cache_file_path):
-            print("Load cached Data", files_hash)
+            logging.info(f"Load cached Data {cache_file_path}")
             with open(cache_file_path, 'rb') as reader:
                 data = pickle.load(reader)
         else:
-            print("Create cached Data", files_hash)
+            logging.info(f"Create cached Data {files_hash}")
             data = []
             for file_path in files_path:
                 audio, _sr = librosa.load(file_path, sr=sr)
