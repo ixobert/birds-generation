@@ -69,7 +69,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.dataset = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=True, use_spectrogram=self.config.get('use_mel', False))
 
     def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
+        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True)
 
 if __name__ == "__main__":
     root_ = "/Users/test/Documents/Projects/Master/"
