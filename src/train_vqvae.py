@@ -26,7 +26,7 @@ class VQEngine(pl.LightningModule):
         self.hparams = hparams
         self.net = networks.VQVAE(**self.hparams.net)
         self.criterion = nn.MSELoss()
-        self.sample = None
+        self.cache = {}
 
     def forward(self, *args, **kwargs):
         return self.net(*args, **kwargs)
@@ -49,7 +49,9 @@ class VQEngine(pl.LightningModule):
 
     def training_step(self, train_batch, batch_idx):
         img, label, file_path = train_batch
-        self.sample = img
+        if 'sample' not in self.cache:
+            self.cache['sample'] = img
+
         out, latent_loss = self.net(img)
         latent_loss = latent_loss.mean()
 
@@ -60,8 +62,10 @@ class VQEngine(pl.LightningModule):
         return logs
 
     def _generate(self, input):
-        out = self.net(input, logits_only=True)
-        return out
+        quant_top, quant_bottom, diff, id_top, id_bottom = self.net.encode(input)
+        out = self.net.decode(quant_top, quant_bottom)
+
+        return out.detach().cpu(), id_top.long().detach().cpu(), id_bottom.long().detach().cpu()
 
     def _remove_dim(self, input):
         """ 
@@ -81,26 +85,43 @@ class VQEngine(pl.LightningModule):
             im.save(outfile)
         return ndarr
 
+    def _render_codebook(self, codebook):
+        import matplotlib.pyplot as plt
+        import io
+        fig, axs = plt.subplots()
+        axs.imshow(codebook[0], interpolation=None)
+        for i in range(len(codebook[0][0])):
+            for j in range(len(codebook[0][1])):
+                axs.text(i,j, codebook[0][j][i],ha='center',va='center')
+        return fig
+
+
     def training_epoch_end(self,*args, **kwargs):
-        if self.current_epoch % 100 != 0:
+        # epoch = self.current_epoch
+        if self.current_epoch % 2 != 0:
             return 
-        out = self._generate(self.sample)
-        out = self._remove_dim(out)
+        if 'sample' not in self.cache:
+            return
+        sample = self.cache['sample']
+
+        out, codebook_top, codebook_bottom = self._generate(sample)
 
         # os.makedirs('./outs', exist_ok=True)
         # os.makedirs('./samples', exist_ok=True)
         # torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
-        # torch.save(self.sample, f'./samples/{str(self.current_epoch)}.tmp')
-
-        input_grid = make_grid(self._remove_dim(self.sample).cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
-        recon_grid = make_grid(out.detach().cpu(), nrow=self.sample.shape[0], padding=True, pad_value=1.0)
+        # torch.save(sample, f'./samples/{str(self.current_epoch)}.tmp')
+        input_grid = make_grid(self._remove_dim(sample), nrow=len(sample), padding=True, pad_value=1.0)
+        recon_grid = make_grid(self._remove_dim(out), nrow=len(sample), padding=True, pad_value=1.0)
+        
 
         input_grid = self._convert_grid_to_img(input_grid) #Need to set save to True if you want to save the image
         recon_grid = self._convert_grid_to_img(recon_grid)
-        
+
         self.logger.experiment.log({
-            'input':         wandb.Image(input_grid),
-            'reconstructed': wandb.Image(recon_grid),
+            'spectrograms':[
+                wandb.Image(input_grid, caption='Input'), 
+                wandb.Image(recon_grid, caption='Reconstructed'),
+                ]
         })
 
 
