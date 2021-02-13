@@ -110,11 +110,11 @@ class VQEngine(pl.LightningModule):
         # os.makedirs('./samples', exist_ok=True)
         # torch.save(out, f'./outs/{str(self.current_epoch)}.tmp')
         # torch.save(sample, f'./samples/{str(self.current_epoch)}.tmp')
-        input_grid = make_grid(self._remove_dim(sample), nrow=len(sample), padding=True, pad_value=1.0)
+        input_grid = make_grid(self._remove_dim(sample.detach().cpu()), nrow=len(sample), padding=True, pad_value=1.0)
         recon_grid = make_grid(self._remove_dim(out), nrow=len(sample), padding=True, pad_value=1.0)
         
 
-        input_grid = self._convert_grid_to_img(input_grid) #Need to set save to True if you want to save the image
+        input_grid = self._convert_grid_to_img(input_grid) 
         recon_grid = self._convert_grid_to_img(recon_grid)
 
         self.logger.experiment.log({
