@@ -97,7 +97,7 @@ class VQEngine(pl.LightningModule):
 
     def training_epoch_end(self,*args, **kwargs):
         # epoch = self.current_epoch
-        if self.current_epoch % 100 != 0:
+        if self.current_epoch % 10 != 0:
             return 
         if 'sample' not in self.cache:
             return
@@ -116,6 +116,10 @@ class VQEngine(pl.LightningModule):
         input_grid = self._convert_grid_to_img(input_grid) 
         recon_grid = self._convert_grid_to_img(recon_grid)
 
+        self.logger.experiment.log({
+            'top_codebook': 100.0*len(torch.unique(codebook_top, sorted=False))/self.net.n_embed,
+            'bottom_codebook': 100.0*len(torch.unique(codebook_bottom, sorted=False))/self.net.n_embed
+        })
         self.logger.experiment.log({
             'spectrograms':[
                 wandb.Image(input_grid, caption='Input'), 
