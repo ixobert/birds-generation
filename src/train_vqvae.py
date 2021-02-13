@@ -97,7 +97,7 @@ class VQEngine(pl.LightningModule):
 
     def training_epoch_end(self,*args, **kwargs):
         # epoch = self.current_epoch
-        if self.current_epoch % 10 != 0:
+        if self.current_epoch % self.hparams['log_frequency'] != 0:
             return 
         if 'sample' not in self.cache:
             return
@@ -118,9 +118,9 @@ class VQEngine(pl.LightningModule):
 
         self.logger.experiment.log({
             'top_codebook': 100.0*len(torch.unique(codebook_top, sorted=False))/self.net.n_embed,
-            'bottom_codebook': 100.0*len(torch.unique(codebook_bottom, sorted=False))/self.net.n_embed
-        })
-        self.logger.experiment.log({
+            'bottom_codebook': 100.0*len(torch.unique(codebook_bottom, sorted=False))/self.net.n_embed,
+            'top_codebook_hist': wandb.Histogram(codebook_top.view(-1), num_bins=self.net.n_embed),
+            'bottom_codebook_hist': wandb.Histogram(codebook_bottom.view(-1), num_bins=self.net.n_embed),
             'spectrograms':[
                 wandb.Image(input_grid, caption='Input'), 
                 wandb.Image(recon_grid, caption='Reconstructed'),
