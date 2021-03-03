@@ -14,9 +14,11 @@ from pytorch_lightning.loggers import WandbLogger as Logger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from PIL import Image
 try:
+    import networks
     from dataloaders import SpectrogramsDataModule
     from dataloaders.audiodataset import AudioDataset
 except ImportError:
+    from src import networks
     from src.dataloaders.audiodataset import AudioDataset
     from src.dataloaders import SpectrogramsDataModule
 
@@ -106,7 +108,33 @@ def main(cfg: DictConfig) -> None:
     datamodule = SpectrogramsDataModule(config=cfg['dataset'], )
 
     # 3. Build the model
-    model = ImageClassifier(num_classes=len(cfg['dataset']['classes_name']), backbone="resnet18")
+    FLASH_MODELS = [
+        "resnet18", 
+        "resnet34", 
+        "resnet50",
+        "resnet101",
+        "resnet152",
+        "resnext50_32x4d",
+        "resnext101_32x8d",
+        "mobilenet_v2",
+        "vgg11",
+        "vgg13",
+        "vgg16",
+        "vgg19",
+        "densenet121",
+        "densenet169",
+        "densenet161",
+        "swav-imagenet",
+    ]
+
+    num_classes = len(cfg['dataset']['classes_name'])
+    if "efficientnet" in cfg['backbone_network']:
+        model = networks.EfficientNet.from_pretrained(cfg['backbone_network'], num_classes=num_classes)
+    elif cfg['backbone_network'] in FLASH_MODELS:
+        model = ImageClassifier(num_classes=num_classes, backbone=cfg['backbone_network'])
+    else:
+        raise NotImplementedError("Network not implemented")
+
 
     # 4. Create the trainer. Run once on data
     trainer = flash.Trainer(max_epochs=1)

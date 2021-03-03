@@ -13,8 +13,7 @@ tags:
 
 nb_epochs: 100
 lr: 0.002
-net:
-  in_channel: 1
+backbone_network: resnet50
 log_frequency: 10
 
 pretrained_weights: ''
