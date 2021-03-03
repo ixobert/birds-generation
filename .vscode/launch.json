@@ -56,6 +56,21 @@
                      "--temp", "1.0",
                      "--filename", "debug-generated.png"
             ]
+        },
+        {
+            "name": "Train Classifier",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_classifier.py",
+            "console": "integratedTerminal",
+            "args": ["working_dir=./outputs", 
+                     "debug=True",
+                     "nb_epochs=10", 
+                     "dataset=udem-birds",
+                     "dataset.return_tuple_of3=false",
+                     "log_frequency=1",
+                     "dataset.num_workers=0"
+            ]
         }
     ]
 }
