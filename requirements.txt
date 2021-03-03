@@ -1,7 +1,8 @@
 pytest
-torch===1.6.0
-torchvision
-pytorch_lightning==1.0.2
+torch==1.7.1
+torchvision==0.8.2
+pytorch_lightning==1.2.0rc0
+lightning-flash
 wandb
 hydra-core
 opencv-python
