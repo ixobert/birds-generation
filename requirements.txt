@@ -1,7 +1,7 @@
 pytest
 torch===1.6.0
 torchvision
-pytorch_lightning
+pytorch_lightning==1.0.2
 wandb
 hydra-core
 opencv-python
