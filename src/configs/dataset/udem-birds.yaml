@@ -1,6 +1,8 @@
 dataset:
   num_workers: 2
   train_path: '/media/future/Rapido/udem-birds/samples/train_list.txt'
+  val_path: '/media/future/Rapido/udem-birds/samples/val_list.txt'
+  test_path: '/media/future/Rapido/udem-birds/samples/test_list.txt'
   root_dir: '/media/future/Rapido/udem-birds/classes'
   lmdb_path: ''
 
@@ -12,5 +14,6 @@ dataset:
 
   resize: false
   return_tuple: true
+  return_tuple_of3: true
   sr: 16384
   use_mel: true
