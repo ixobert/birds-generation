@@ -1,0 +1,21 @@
+defaults:
+  - dataset: udem-birds 
+working_dir: '/home/future/Documents/runs_articfacts/birds-generation/outputs'
+hydra:
+  run:
+    dir: ${working_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+git_hash: ''
+project_name: birds-audio-generation
+run_name: Test run
+tags: 
+  - 'debug'
+
+
+nb_epochs: 100
+lr: 0.002
+net:
+  in_channel: 1
+log_frequency: 10
+
+pretrained_weights: ''
+debug: True
