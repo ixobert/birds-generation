@@ -19,7 +19,7 @@ except ModuleNotFoundError:
 
 
 class AudioDataset():
-    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, use_spectrogram=False):
+    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False):
         self.data_path = data_path
         self.root_dir = root_dir
         self.classes_name = classes_name
@@ -29,6 +29,7 @@ class AudioDataset():
         self.precomputed_available = False
         self.resize = resize
         self.return_tuple = return_tuple
+        self.return_tuple_of3 = return_tuple_of3
         self.use_spectrogram = use_spectrogram
         if self.use_spectrogram and not self.spec:
             print("Overriding spec variables because use_spectrogram is true")
@@ -188,7 +189,11 @@ class AudioDataset():
             features = audio
 
         if self.return_tuple:
-            return torch.Tensor(features), label, file_path
+            if self.return_tuple_of3:
+                return torch.Tensor(features), label, file_path
+            else:
+                features = np.concatenate(3*[features]) #Single channel to 3 channel
+                return torch.Tensor(features), label
         return {
             "x": torch.Tensor(features),
             "y": torch.Tensor(np.expand_dims(one_hot_label, 0)).long(),
