@@ -68,6 +68,7 @@
                      "nb_epochs=10", 
                      "dataset=udem-birds",
                      "dataset.return_tuple_of3=false",
+                     "backbone_network=resnet18",
                      "log_frequency=1",
                      "dataset.num_workers=0"
             ]
