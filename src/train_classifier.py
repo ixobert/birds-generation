@@ -1,6 +1,7 @@
 import sys
 import os
 from typing import List
+import logging
 import librosa
 from numpy.core.numeric import tensordot 
 os.environ['HYDRA_FULL_ERROR'] = '1'
@@ -105,7 +106,7 @@ def main(cfg: DictConfig) -> None:
         cfg['dataset']['test_path'] = os.path.join(root_, "udem-birds/samples/test_list.txt")
 
     # datamodule = get_data(cfg)
-    datamodule = SpectrogramsDataModule(config=cfg['dataset'], )
+    datamodule = SpectrogramsDataModule(config=cfg['dataset'])
 
     # 3. Build the model
     FLASH_MODELS = [
@@ -137,14 +138,23 @@ def main(cfg: DictConfig) -> None:
 
 
     # 4. Create the trainer. Run once on data
-    trainer = flash.Trainer(max_epochs=1)
-
+    checkpoint_callback = ModelCheckpoint('./models-classifier', monitor='val_accuracy', verbose=True)
+    trainer = flash.Trainer(
+        logger=logger,
+        gpus=cfg.get('gpus', 0),
+        max_epochs=cfg.get('nb_epochs', 3),
+        checkpoint_callback=checkpoint_callback,
+    )
+    logger.log_hyperparams(cfg)
     # 5. Fit the model
+    logging.info("Training...")
     trainer.fit(model, datamodule=datamodule)
     # trainer.finetune(model, datamodule=datamodule, strategy="freeze")
     
+    logging.info("Testing...")
+    test_results = trainer.test(datamodule=datamodule)
     # 6. Save it!
-    trainer.save_checkpoint("image_classification_model.pt")
+    trainer.save_checkpoint("last_model.pt")
 
 
 if __name__ == "__main__":
