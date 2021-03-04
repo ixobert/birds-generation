@@ -1,14 +1,14 @@
 import sys
 import os
+import wandb
 from typing import List
 import logging
 import librosa
-from numpy.core.numeric import tensordot 
 os.environ['HYDRA_FULL_ERROR'] = '1'
-from argparse import Namespace
 import hydra
 from omegaconf import DictConfig
-from sklearn.preprocessing import minmax_scale
+from sklearn.metrics import classification_report
+import torch
 import flash
 from flash.vision import ImageClassificationData, ImageClassifier
 from pytorch_lightning.loggers import WandbLogger as Logger
@@ -59,10 +59,7 @@ def load_sample(file_path, nb_second=4, sr=16384, resize=False):
     else:
         audio = librosa.util.fix_length(audio, window_length)
     features = AudioDataset.audio_to_melspectrogram(audio, resize=resize)
-    # features = Image.fromarray(features)
-    # features = torch.from_numpy(features)
-    features = minmax_scale(features, (0, 255))
-    features = Image.fromarray(features)
+    features = torch.from_numpy(features)
     return features
 
 
@@ -87,6 +84,18 @@ def get_data(cfg):
         loader = load_sample,
     )
     return datamodule
+
+
+def evaluate_model(model, dataloader):
+    targets = []
+    predictions = []
+    for features, labels in dataloader():
+        out = model.predict(features)
+        predictions.extend(out)
+        targets.extend(labels.numpy())
+    return predictions, targets
+
+
 
 
 @hydra.main(config_path="configs", config_name="train_classifier")
@@ -128,7 +137,8 @@ def main(cfg: DictConfig) -> None:
         "swav-imagenet",
     ]
 
-    num_classes = len(cfg['dataset']['classes_name'])
+    class_names = cfg['dataset']['classes_name']
+    num_classes = len(class_names)
     if "efficientnet" in cfg['backbone_network']:
         model = networks.EfficientNet.from_pretrained(cfg['backbone_network'], num_classes=num_classes)
     elif cfg['backbone_network'] in FLASH_MODELS:
@@ -152,9 +162,24 @@ def main(cfg: DictConfig) -> None:
     # trainer.finetune(model, datamodule=datamodule, strategy="freeze")
     
     logging.info("Testing...")
-    #TODO: Get performance stats for each class.
-    test_results = trainer.test(datamodule=datamodule)
-    logger.log_metrics(test_results[0])
+    predictions, targets = evaluate_model(model, datamodule.test_dataloader)
+    logger.experiment.log({"confusion_matrix": wandb.plot.confusion_matrix(
+                        probs=None,
+                        y_true=targets,
+                        preds=predictions,
+                        class_names=class_names)})
+    
+    cls_report = classification_report(targets, predictions, target_names=cfg['dataset']['classes_name'], output_dict=True)
+    test_log_metrics = {}
+    for cls_name, metric in cls_report.items():
+        if cls_name in class_names:
+            for metric_name, metric_value in metric.items():
+                test_log_metrics.update({ f"{metric_name}/{cls_name}": metric_value })
+        else:
+            test_log_metrics.update({ f"{cls_name}": metric})
+
+
+    logger.log_metrics(test_log_metrics)
     # 6. Save it!
     trainer.save_checkpoint("last_model.pt")
 
