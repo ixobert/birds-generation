@@ -159,9 +159,9 @@ def main(cfg: DictConfig) -> None:
     # 5. Fit the model
     logging.info("Training...")
     trainer.fit(model, datamodule=datamodule)
-    # trainer.finetune(model, datamodule=datamodule, strategy="freeze")
     
     logging.info("Testing...")
+    #TODO: Load best model not last model
     predictions, targets = evaluate_model(model, datamodule.test_dataloader)
     logger.experiment.log({"confusion_matrix": wandb.plot.confusion_matrix(
                         probs=None,
@@ -178,10 +178,7 @@ def main(cfg: DictConfig) -> None:
         else:
             test_log_metrics.update({ f"{cls_name}": metric})
 
-
     logger.log_metrics(test_log_metrics)
-    # 6. Save it!
-    trainer.save_checkpoint("last_model.pt")
 
 
 if __name__ == "__main__":
