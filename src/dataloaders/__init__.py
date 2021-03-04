@@ -63,6 +63,8 @@ class SpectrogramsDataModule(pl.LightningDataModule):
             root_ = "/Users/test/Documents/Projects/Master/"
             self.config['root_dir'] = os.path.join(root_, "udem-birds/classes")
             self.config['train_path'] = os.path.join(root_, "udem-birds/samples/train_list.txt")
+            self.config['val_path'] = os.path.join(root_, "udem-birds/samples/val_list.txt")
+            self.config['test_path'] = os.path.join(root_, "udem-birds/samples/test_list.txt")
             # self.config['root_dir'] = os.path.join(root_, "british-birdsong-dataset/songs")
             # self.config['train_path'] = os.path.join(root_, "british-birdsong-dataset/songs/train.txt")
         #################
