@@ -12,5 +12,6 @@ dataset:
 
   resize: false
   return_tuple: true
+  return_tuple_of3: true
   sr: 16384
   use_mel: true
