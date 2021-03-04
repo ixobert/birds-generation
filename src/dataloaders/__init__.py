@@ -74,10 +74,10 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True)
         
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True)
+        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True)
 
 if __name__ == "__main__":
     root_ = "/Users/test/Documents/Projects/Master/"
