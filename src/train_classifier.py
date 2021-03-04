@@ -152,7 +152,9 @@ def main(cfg: DictConfig) -> None:
     # trainer.finetune(model, datamodule=datamodule, strategy="freeze")
     
     logging.info("Testing...")
+    #TODO: Get performance stats for each class.
     test_results = trainer.test(datamodule=datamodule)
+    logger.log_metrics(test_results[0])
     # 6. Save it!
     trainer.save_checkpoint("last_model.pt")
 
