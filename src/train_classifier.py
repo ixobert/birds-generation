@@ -161,7 +161,8 @@ def main(cfg: DictConfig) -> None:
     trainer.fit(model, datamodule=datamodule)
     
     logging.info("Testing...")
-    #TODO: Load best model not last model
+    #TODO: Load best model not last model.
+    #HOW: Wrap network in a plModule.
     predictions, targets = evaluate_model(model, datamodule.test_dataloader)
     logger.experiment.log({"confusion_matrix": wandb.plot.confusion_matrix(
                         probs=None,
