@@ -96,24 +96,17 @@ def evaluate_model(model, dataloader):
     return predictions, targets
 
 
-
-
 @hydra.main(config_path="configs", config_name="train_classifier")
 def main(cfg: DictConfig) -> None:
+    current_folder = os.getcwd()
+    logging.info(f"Current Folder:{current_folder}")
+
     if cfg.get('debug', False):
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags']+["debug"])
     else:
         logger = Logger(project=cfg['project_name'], name=cfg['run_name'], tags=cfg['tags'])
 
-
-    platform = sys.platform.lower() 
-    if platform == "darwin":
-        root_ = "/Users/test/Documents/Projects/Master/"
-        cfg['dataset']['root_dir'] = os.path.join(root_, "udem-birds/classes")
-        cfg['dataset']['train_path'] = os.path.join(root_, "udem-birds/samples/train_list.txt")
-        cfg['dataset']['val_path'] = os.path.join(root_, "udem-birds/samples/val_list.txt")
-        cfg['dataset']['test_path'] = os.path.join(root_, "udem-birds/samples/test_list.txt")
-
+    logging.info(cfg)
     # datamodule = get_data(cfg)
     datamodule = SpectrogramsDataModule(config=cfg['dataset'])
 
@@ -138,17 +131,20 @@ def main(cfg: DictConfig) -> None:
     ]
 
     class_names = cfg['dataset']['classes_name']
+    backbone_network = cfg['backbone_network']
     num_classes = len(class_names)
-    if "efficientnet" in cfg['backbone_network']:
-        model = networks.EfficientNet.from_pretrained(cfg['backbone_network'], num_classes=num_classes)
-    elif cfg['backbone_network'] in FLASH_MODELS:
-        model = ImageClassifier(num_classes=num_classes, backbone=cfg['backbone_network'])
+
+    if "efficientnet" in backbone_network:
+        model = networks.EfficientNet.from_pretrained(backbone_network, num_classes=num_classes)
+    elif backbone_network in FLASH_MODELS:
+        model = ImageClassifier(num_classes=num_classes, backbone=backbone_network)
     else:
-        raise NotImplementedError("Network not implemented")
+        raise NotImplementedError(f"Network: `{backbone_network}` not implemented.")
 
 
     # 4. Create the trainer. Run once on data
-    checkpoint_callback = ModelCheckpoint('./models-classifier', monitor='val_accuracy', verbose=True)
+    model_folder  = os.path.join(current_folder, 'models-classifier')
+    checkpoint_callback = ModelCheckpoint(model_folder, monitor='val_accuracy', verbose=True)
     trainer = flash.Trainer(
         logger=logger,
         gpus=cfg.get('gpus', 0),
@@ -156,13 +152,28 @@ def main(cfg: DictConfig) -> None:
         checkpoint_callback=checkpoint_callback,
     )
     logger.log_hyperparams(cfg)
+
     # 5. Fit the model
     logging.info("Training...")
     trainer.fit(model, datamodule=datamodule)
     
     logging.info("Testing...")
-    #TODO: Load best model not last model.
-    #HOW: Wrap network in a plModule.
+    logging.info("\tLoad best model...")
+    saved_model =  os.listdir(model_folder)
+    if len(saved_model) == 0:
+        logging.info(f"No model found in {model_folder}")
+        exit(1)
+    elif len(saved_model) == 1:
+        model_path = saved_model[0]
+    else:
+        logging.info(f"More than 1 model found in {model_folder}. We will load the last one using natsort.")
+        import natsort
+        model_path = natsort.natsorted(saved_model)[-1]
+    model_path = os.path.join(model_folder , model_path)
+
+    model.load_from_checkpoint(model_path)
+
+    logging.info("\tInference...")
     predictions, targets = evaluate_model(model, datamodule.test_dataloader)
     logger.experiment.log({"confusion_matrix": wandb.plot.confusion_matrix(
                         probs=None,
@@ -170,7 +181,7 @@ def main(cfg: DictConfig) -> None:
                         preds=predictions,
                         class_names=class_names)})
     
-    cls_report = classification_report(targets, predictions, target_names=cfg['dataset']['classes_name'], output_dict=True)
+    cls_report = classification_report(targets, predictions, target_names=class_names, output_dict=True)
     test_log_metrics = {}
     for cls_name, metric in cls_report.items():
         if cls_name in class_names:
@@ -180,6 +191,7 @@ def main(cfg: DictConfig) -> None:
             test_log_metrics.update({ f"{cls_name}": metric})
 
     logger.log_metrics(test_log_metrics)
+    logging.info(test_log_metrics)
 
 
 if __name__ == "__main__":
