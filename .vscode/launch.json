@@ -23,7 +23,8 @@
                      "debug=True",
                      "nb_epochs=10", 
                      "mode=train_extract", 
-                     "dataset=udem-birds",
+                     "dataset=xeno-canto",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/xeno-canto",
                      "log_frequency=1",
                      "dataset.num_workers=0"
             ]
