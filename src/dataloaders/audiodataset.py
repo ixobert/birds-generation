@@ -12,6 +12,8 @@ import numpy as np
 import random
 import cv2
 import sklearn.preprocessing
+import warnings
+warnings.filterwarnings('ignore', 'PySoundFile failed. Trying audioread instead.')
 try:
     from helpers import specgram, ispecgram
 except ModuleNotFoundError:
@@ -44,7 +46,7 @@ class AudioDataset():
                 for cls in self.classes_name:
                     if cls in d:
                         self.data_paths.append(d)
-            self.data_paths = [os.path.join(self.root_dir, x) for x in self.data_paths]
+            self.data_paths = [os.path.join(self.root_dir, x).strip() for x in self.data_paths]
         
         self.data = self.get_cached_dataset(files_path=self.data_paths, sr=self.sr)
         print("Loaded data from cache", len(self.data), len(self.data_paths))
