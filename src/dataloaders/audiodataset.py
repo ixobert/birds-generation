@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 
 
 class AudioDataset():
-    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False):
+    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False, use_cache=True):
         self.data_path = data_path
         self.root_dir = root_dir
         self.classes_name = classes_name
@@ -33,6 +33,7 @@ class AudioDataset():
         self.return_tuple = return_tuple
         self.return_tuple_of3 = return_tuple_of3
         self.use_spectrogram = use_spectrogram
+        self.use_cache = use_cache
         if self.use_spectrogram and not self.spec:
             print("Overriding spec variables because use_spectrogram is true")
             self.spec = True
@@ -48,8 +49,12 @@ class AudioDataset():
                         self.data_paths.append(d)
             self.data_paths = [os.path.join(self.root_dir, x).strip() for x in self.data_paths]
         
-        self.data = self.get_cached_dataset(files_path=self.data_paths, sr=self.sr)
-        print("Loaded data from cache", len(self.data), len(self.data_paths))
+        if self.use_cache:
+            self.data = self.get_cached_dataset(files_path=self.data_paths)
+            print("Loaded data from cache", len(self.data), len(self.data_paths))
+        else:
+            self.data = [(file_path, None) for file_path in self.data_paths]
+            print("Not using cache", len(self.data), len(self.data_paths))
 
         #Only keep samples that have the class considered for the experiment.
         self.data = [ x for x in self.data if True in [class_ in x[0] for class_ in classes_name] ]
@@ -64,7 +69,7 @@ class AudioDataset():
         return len(self.data)
 
     @classmethod
-    def get_cached_dataset(cls, files_path:str, sr:int, cache_folder:str ='/tmp/cached_dataset') -> list:
+    def get_cached_dataset(cls, files_path:str, cache_folder:str ='/tmp/cached_dataset') -> list:
         """
             This Function build (or load if it already exists) and return it as an output
         """
@@ -81,9 +86,7 @@ class AudioDataset():
             logging.info(f"Create cached Data {files_hash}")
             data = []
             for file_path in files_path:
-                audio, _sr = librosa.load(file_path, sr=sr)
-                if _sr != sr:
-                    audio = librosa.resample(audio, _sr, sr)
+                audio, _sr = librosa.load(file_path)
                 data.append((file_path, audio))
             with open(cache_file_path, 'wb') as writer:
                 pickle.dump(data, writer)
@@ -163,6 +166,11 @@ class AudioDataset():
 
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
+        if self.use_cache == False:
+            audio, _sr = librosa.load(file_path, sr=self.sr)
+            if _sr != self.sr:
+                audio = librosa.resample(audio, _sr, self.sr)
+
         if len(audio) >= self.window_length:
             audio = audio[0:self.window_length]
         else:
