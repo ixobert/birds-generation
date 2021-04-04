@@ -166,50 +166,60 @@ class AudioDataset():
 
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
-        if self.use_cache == False:
-            audio, _sr = librosa.load(file_path, sr=self.sr)
-            if _sr != self.sr:
-                audio = librosa.resample(audio, _sr, self.sr)
+        try:
+            if self.use_cache == False:
+                audio, _sr = librosa.load(file_path, sr=self.sr)
+                if _sr != self.sr:
+                    audio = librosa.resample(audio, _sr, self.sr)
 
-        if len(audio) >= self.window_length:
-            audio = audio[0:self.window_length]
-        else:
-            audio = librosa.util.fix_length(audio, self.window_length)
-
-        if 'udem' in file_path:
-            label_name = file_path.split('/')[-2]
-        # elif 'nsynth' in file_path:
-            # label_name = os.path.basename(file_path).split('_')[0]
-        elif 'flute' in file_path:
-            label_name = os.path.basename(file_path).split('-')[1]
-        else:
-            label_name = file_path.split('/')[-2]
-        label = self.classes_name.index(label_name)
-        one_hot_label = np.zeros(len(self.classes_name))
-        one_hot_label[label] = 1
-        # print(one_hot_label, label, label_name)
-
-        if self.spec:
-            if self.use_spectrogram:
-                features = self.audio_to_melspectrogram(audio, resize=self.resize)
+            if len(audio) >= self.window_length:
+                audio = audio[0:self.window_length]
             else:
-                features = self.audio_to_specgram(audio, resize=self.resize)
-            # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
-        else:
-            features = audio
+                audio = librosa.util.fix_length(audio, self.window_length)
 
-        if self.return_tuple:
+            if 'udem' in file_path:
+                label_name = file_path.split('/')[-2]
+            # elif 'nsynth' in file_path:
+                # label_name = os.path.basename(file_path).split('_')[0]
+            elif 'flute' in file_path:
+                label_name = os.path.basename(file_path).split('-')[1]
+            else:
+                label_name = file_path.split('/')[-2]
+            label = self.classes_name.index(label_name)
+            one_hot_label = np.zeros(len(self.classes_name))
+            one_hot_label[label] = 1
+            # print(one_hot_label, label, label_name)
+
+            if self.spec:
+                if self.use_spectrogram:
+                    features = self.audio_to_melspectrogram(audio, resize=self.resize)
+                else:
+                    features = self.audio_to_specgram(audio, resize=self.resize)
+                # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+            else:
+                features = audio
+
+            features = torch.tensor(features)
+            label = torch.tensor(label)
+            if self.return_tuple:
+                if self.return_tuple_of3:
+                    return features, label, file_path
+                else:
+                    ##TODO: fix make special case for image classifier.
+                    features = np.concatenate(3*[features]) #Single channel to 3 channel
+                    return features, label
+            return {
+                "x": features,
+                "y": torch.Tensor(np.expand_dims(one_hot_label, 0)).long(),
+                # "audio": audio,
+                # "label": label,
+            }
+        except Exception as e:
+            logging.info(f"Error {e} on file: {file_path}")
             if self.return_tuple_of3:
-                return torch.Tensor(features), label, file_path
+                return None, None, None
             else:
-                features = np.concatenate(3*[features]) #Single channel to 3 channel
-                return torch.Tensor(features), label
-        return {
-            "x": torch.Tensor(features),
-            "y": torch.Tensor(np.expand_dims(one_hot_label, 0)).long(),
-            # "audio": audio,
-            # "label": label,
-        }
+                return None, None
 
 
 if __name__ == "__main__":

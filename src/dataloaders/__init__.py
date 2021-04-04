@@ -1,6 +1,7 @@
 import os
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
+import torch
 try:
     from imagedataset import ImageDataset
     from audiodataset import AudioDataset
@@ -53,19 +54,27 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.config = kwargs.get('config')
         self.batch_size = self.config.get('batch_size', 2)
 
+    @classmethod
+    def _custom_collate(self, batch):
+        batch = list(filter ( lambda x: None not in x, batch))
+        input = torch.stack([b[0] for b in batch])
+        label = torch.stack([b[1] for b in batch])
+        filepath = [b[2] for b in batch]
+        return input, label, filepath
+
     def setup(self, stage=None):
         self.dataset      = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True))
         self.val_dataset  = AudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True))
         self.test_dataset = AudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True))
 
     def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True)
+        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True, collate_fn=self._custom_collate)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True, collate_fn=self._custom_collate)
         
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True)
+        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.config['num_workers'], pin_memory=True, collate_fn=self._custom_collate)
 
 if __name__ == "__main__":
     root_ = "/Users/test/Documents/Projects/Master/"
