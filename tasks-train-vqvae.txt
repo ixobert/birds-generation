@@ -1,1 +1,1 @@
-/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="xeno-canto" mode="train" lr=0.00002 nb_epochs=25000 log_frequency=1 dataset.batch_size=64 run_name="Full Training -Dataset xeno-canto"  tags=[vq-vae2,xeno-canto]
+/home/future/anaconda3/envs/scologan/bin/python ./src/train_vqvae.py +gpus=[1] debug=false dataset="xeno-canto" mode="train" lr=0.00002 nb_epochs=25000 log_frequency=1 dataset.batch_size=16 ataset.num_workers=8 run_name="Full Training -Dataset xeno-canto"  tags=[vq-vae2,xeno-canto]
