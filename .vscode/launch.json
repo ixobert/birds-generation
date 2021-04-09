@@ -22,12 +22,12 @@
             "args": ["working_dir=./outputs", 
                      "debug=True",
                      "nb_epochs=10", 
-                     "dataset.batch_size=6", 
-                     "mode=extract", 
+                     "dataset.batch_size=64", 
+                     "mode=train", 
                      "dataset=xeno-canto",
                      "dataset.root_dir=/Users/test/Documents/Projects/Master/xeno-canto",
                      "log_frequency=1",
-                     "dataset.num_workers=6"
+                     "dataset.num_workers=0"
             ]
         },
 

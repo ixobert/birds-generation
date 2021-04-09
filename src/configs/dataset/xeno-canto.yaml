@@ -1,14 +1,15 @@
 dataset:
   num_workers: 6
   root_dir: '/media/future/Rapido/xeno-canto'
-  train_path: '${dataset.root_dir}/train.txt'
-  val_path: '${dataset.root_dir}/val.txt'
-  test_path: '${dataset.root_dir}/test.txt'
+  train_path: '${dataset.root_dir}/train-images.txt'
+  val_path: '${dataset.root_dir}/val-images.txt'
+  test_path: '${dataset.root_dir}/test-images.txt'
   lmdb_path: ''
 
   batch_size: 6
   classes_name: 
       - training_data
+      - spectrograms
 
   resize: false
   return_tuple: true

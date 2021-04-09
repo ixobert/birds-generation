@@ -164,18 +164,35 @@ class AudioDataset():
         #     specgram= np.pad(specgram, ((0,0),(0,1),(0,0)))
         return ispecgram(specgram, n_fft=1024)
 
+
+    def load_audio(self,file_path, sr, window_length=0):
+        audio, _sr = librosa.load(file_path, sr=sr)
+        if _sr != self.sr:
+            audio = librosa.resample(audio, _sr, sr)
+
+        if self.window_length and len(audio) >= self.window_length:
+            audio = audio[0:self.window_length]
+        else:
+            audio = librosa.util.fix_length(audio, self.window_length)
+        return audio
+
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
         try:
             if self.use_cache == False:
-                audio, _sr = librosa.load(file_path, sr=self.sr)
-                if _sr != self.sr:
-                    audio = librosa.resample(audio, _sr, self.sr)
+                if file_path.endswith('.npy'):
+                    features = np.load(file_path) 
+                else:
+                    audio = self.load_audio(file_path, self.sr, self.sr*4)
 
-            if len(audio) >= self.window_length:
-                audio = audio[0:self.window_length]
-            else:
-                audio = librosa.util.fix_length(audio, self.window_length)
+                    if self.spec:
+                        if self.use_spectrogram:
+                            features = self.audio_to_melspectrogram(audio, resize=self.resize)
+                        else:
+                            features = self.audio_to_specgram(audio, resize=self.resize)
+                        # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+                    else:
+                        features = audio
 
             if 'udem' in file_path:
                 label_name = file_path.split('/')[-2]
@@ -190,14 +207,6 @@ class AudioDataset():
             one_hot_label[label] = 1
             # print(one_hot_label, label, label_name)
 
-            if self.spec:
-                if self.use_spectrogram:
-                    features = self.audio_to_melspectrogram(audio, resize=self.resize)
-                else:
-                    features = self.audio_to_specgram(audio, resize=self.resize)
-                # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
-            else:
-                features = audio
 
             features = torch.tensor(features)
             label = torch.tensor(label)
