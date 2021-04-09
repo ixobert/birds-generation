@@ -1,7 +1,7 @@
 dataset:
   num_workers: 6
   root_dir: '/media/future/Rapido/xeno-canto'
-  train_path: '${dataset.root_dir}/train-images.txt'
+  train_path: '${dataset.root_dir}/all-images.txt'
   val_path: '${dataset.root_dir}/val-images.txt'
   test_path: '${dataset.root_dir}/test-images.txt'
   lmdb_path: ''
