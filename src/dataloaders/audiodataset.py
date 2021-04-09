@@ -182,6 +182,7 @@ class AudioDataset():
             if self.use_cache == False:
                 if file_path.endswith('.npy'):
                     features = np.load(file_path) 
+                    features= np.expand_dims(features,0)
                 else:
                     audio = self.load_audio(file_path, self.sr, self.sr*4)
 
