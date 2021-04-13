@@ -184,7 +184,7 @@ class AudioDataset():
             if audio is None:
                 if file_path.endswith('.npy'):
                     features = np.load(file_path) 
-                    features= np.expand_dims(features,0)
+                    # features= np.expand_dims(features,0)
                 else:
                     audio = self.load_audio(file_path, self.sr, self.sr*4)
                 
