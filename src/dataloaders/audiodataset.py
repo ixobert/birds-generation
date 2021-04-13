@@ -227,7 +227,7 @@ class AudioDataset():
                 # "label": label,
             }
         except Exception as e:
-            logging.info(f"Error {e} on file: {file_path} -- {traceback.format_exec()}")
+            logging.info(f"Error {e} on file: {file_path} -- {traceback.format_exc()}")
             if self.return_tuple_of3:
                 return None, None, None
             else:
