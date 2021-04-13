@@ -27,6 +27,7 @@
                      "dataset=xeno-canto",
                      "dataset.root_dir=/Users/test/Documents/Projects/Master/xeno-canto",
                      "log_frequency=1",
+                     "dataset.use_cache=False",
                      "dataset.num_workers=0"
             ]
         },
