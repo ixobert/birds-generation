@@ -59,6 +59,8 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         batch = list(filter ( lambda x: None not in x, batch))
         input = torch.stack([b[0] for b in batch])
         label = torch.stack([b[1] for b in batch])
+        if len(batch[0]) == 2:
+            return input, label
         filepath = [b[2] for b in batch]
         return input, label, filepath
 
