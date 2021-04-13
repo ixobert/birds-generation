@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 
 
 class AudioDataset():
-    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False, use_cache=True):
+    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False, use_cache=True, use_rgb=False):
         self.data_path = data_path
         self.root_dir = root_dir
         self.classes_name = classes_name
@@ -34,6 +34,7 @@ class AudioDataset():
         self.return_tuple_of3 = return_tuple_of3
         self.use_spectrogram = use_spectrogram
         self.use_cache = use_cache
+        self.use_rgb = use_rgb
         if self.use_spectrogram and not self.spec:
             print("Overriding spec variables because use_spectrogram is true")
             self.spec = True
@@ -216,7 +217,8 @@ class AudioDataset():
                     return features, label, file_path
                 else:
                     ##TODO: fix make special case for image classifier.
-                    features = np.concatenate(3*[features]) #Single channel to 3 channel
+                    if self.use_rgb:
+                        features = np.concatenate(3*[features]) #Single channel to 3 channel
                     return features, label
             return {
                 "x": features,
