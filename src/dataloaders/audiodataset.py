@@ -1,5 +1,6 @@
 import logging
 import os
+import traceback
 import pickle
 import natsort
 import uuid
@@ -226,7 +227,7 @@ class AudioDataset():
                 # "label": label,
             }
         except Exception as e:
-            logging.info(f"Error {e} on file: {file_path}")
+            logging.info(f"Error {e} on file: {file_path} -- {traceback.format_exec()}")
             if self.return_tuple_of3:
                 return None, None, None
             else:
