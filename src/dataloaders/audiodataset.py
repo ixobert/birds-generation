@@ -180,22 +180,21 @@ class AudioDataset():
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
         try:
-            if self.use_cache == False:
+            if audio is None:
                 if file_path.endswith('.npy'):
                     features = np.load(file_path) 
                     features= np.expand_dims(features,0)
                 else:
                     audio = self.load_audio(file_path, self.sr, self.sr*4)
-
-                    if self.spec:
-                        if self.use_spectrogram:
-                            features = self.audio_to_melspectrogram(audio, resize=self.resize)
-                        else:
-                            features = self.audio_to_specgram(audio, resize=self.resize)
-                        # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
-                    else:
-                        features = audio
-
+                
+            if self.spec:
+                if self.use_spectrogram:
+                    features = self.audio_to_melspectrogram(audio, resize=self.resize)
+                else:
+                    features = self.audio_to_specgram(audio, resize=self.resize)
+                # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+            else:
+                features = audio
             if 'udem' in file_path:
                 label_name = file_path.split('/')[-2]
             # elif 'nsynth' in file_path:
