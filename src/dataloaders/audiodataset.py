@@ -43,7 +43,7 @@ class AudioDataset():
 
         self.data_paths = []
         with open(self.data_path, 'r') as reader:
-            data = reader.read().splitlines()
+            data = reader.read().splitlines()[0:100]
             print("All paths", len(data))
             for d in data:
                 for cls in self.classes_name:
@@ -186,7 +186,7 @@ class AudioDataset():
                     features = np.load(file_path) 
                     features= np.expand_dims(features,0)
                 else:
-                    audio = self.load_audio(file_path, self.sr, self.sr*4)
+                    audio = self.load_audio(file_path, self.sr, self.window_length)
                 
                     if self.spec:
                         if self.use_spectrogram:
@@ -209,6 +209,9 @@ class AudioDataset():
             one_hot_label[label] = 1
             # print(one_hot_label, label, label_name)
 
+            ##TODO: fix make special case for image classifier.
+            if self.use_rgb:
+                features = np.concatenate(3*[features]) #Single channel to 3 channel
 
             features = torch.tensor(features)
             label = torch.tensor(label)
@@ -216,9 +219,6 @@ class AudioDataset():
                 if self.return_tuple_of3:
                     return features, label, file_path
                 else:
-                    ##TODO: fix make special case for image classifier.
-                    if self.use_rgb:
-                        features = np.concatenate(3*[features]) #Single channel to 3 channel
                     return features, label
             return {
                 "x": features,

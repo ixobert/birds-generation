@@ -1,6 +1,7 @@
 dataset:
   num_workers: 6
-  root_dir: '/media/future/Rapido/NIPS4B_BIRD_CHALLENGE_TRAIN_TEST_WAV/birds-generation-classification/'
+  # root_dir: '/media/future/Rapido/NIPS4B_BIRD_CHALLENGE_TRAIN_TEST_WAV/birds-generation-classification/'
+  root_dir: '/Users/test/Documents/Projects/Master/nips4bplus'
   train_path: '${dataset.root_dir}/train.txt'
   val_path: '${dataset.root_dir}/test.txt'
   test_path: '${dataset.root_dir}/test.txt'

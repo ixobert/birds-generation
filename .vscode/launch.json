@@ -69,7 +69,7 @@
             "args": ["working_dir=./outputs", 
                      "debug=True",
                      "nb_epochs=10", 
-                     "dataset=xeno-canto",
+                     "dataset=nips4bplus",
                      "dataset.return_tuple_of3=false",
                      "backbone_network=resnet18",
                      "log_frequency=1",
