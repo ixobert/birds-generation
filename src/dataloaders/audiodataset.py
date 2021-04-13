@@ -43,7 +43,7 @@ class AudioDataset():
 
         self.data_paths = []
         with open(self.data_path, 'r') as reader:
-            data = reader.read().splitlines()[0:100]
+            data = reader.read().splitlines()
             print("All paths", len(data))
             for d in data:
                 for cls in self.classes_name:
