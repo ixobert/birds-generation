@@ -101,3 +101,4 @@ dataset:
   return_tuple_of3: true
   sr: 22050
   use_mel: true
+  use_cache: false
