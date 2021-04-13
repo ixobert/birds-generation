@@ -102,3 +102,4 @@ dataset:
   sr: 22050
   use_mel: true
   use_cache: false
+  use_rgb: true
