@@ -6,7 +6,7 @@ dataset:
   test_path: '${dataset.root_dir}/test.txt'
   lmdb_path: ''
 
-  batch_size: 6
+  batch_size: 32
   classes_name: 
       - Aegcau_call
       - Alaarv_song
