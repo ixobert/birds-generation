@@ -213,8 +213,6 @@ class AudioDataset():
             # print(one_hot_label, label, label_name)
 
             if self.use_rgb:
-                logging.info(f"Features 1 shape: {features.shape}")
-                logging.info(f"Features 2 shape: {features.shape}")
                 features = np.concatenate(3*[features]) #Single channel to 3 channel
             features = torch.tensor(features)
             features = torchvision.transforms.ToPILImage()(features)
