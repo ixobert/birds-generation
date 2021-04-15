@@ -70,7 +70,7 @@
                      "debug=True",
                      "nb_epochs=10", 
                      "dataset=nips4bplus",
-                     "dataset.root=/Users/test/Documents/Projects/Master/nips4bplus",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/nips4bplus",
                      "dataset.return_tuple_of3=false",
                      "backbone_network=resnet18",
                      "log_frequency=1",

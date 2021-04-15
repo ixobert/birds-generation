@@ -14,6 +14,8 @@ import random
 import cv2
 import sklearn.preprocessing
 import warnings
+
+import torchvision
 warnings.filterwarnings('ignore', 'PySoundFile failed. Trying audioread instead.')
 try:
     from helpers import specgram, ispecgram
@@ -22,7 +24,7 @@ except ModuleNotFoundError:
 
 
 class AudioDataset():
-    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False, use_cache=True, use_rgb=False):
+    def __init__(self, root_dir, data_path, classes_name, sr=16000, window_length=16384, spec=False, resize=True, return_tuple=False, return_tuple_of3=True, use_spectrogram=False, use_cache=True, use_rgb=False, transforms=None):
         self.data_path = data_path
         self.root_dir = root_dir
         self.classes_name = classes_name
@@ -36,6 +38,7 @@ class AudioDataset():
         self.use_spectrogram = use_spectrogram
         self.use_cache = use_cache
         self.use_rgb = use_rgb
+        self.transforms = transforms
         if self.use_spectrogram and not self.spec:
             print("Overriding spec variables because use_spectrogram is true")
             self.spec = True
@@ -43,7 +46,7 @@ class AudioDataset():
 
         self.data_paths = []
         with open(self.data_path, 'r') as reader:
-            data = reader.read().splitlines()
+            data = reader.read().splitlines()[0:100]
             print("All paths", len(data))
             for d in data:
                 for cls in self.classes_name:
@@ -134,7 +137,6 @@ class AudioDataset():
         #If row is odd, skip the first row
         if features.shape[1] % 2 != 0:
             features = features[:, 1:]
-        features = np.expand_dims(features, 0)
         return features
 
 
@@ -196,6 +198,7 @@ class AudioDataset():
                         # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
                     else:
                         features = audio
+            
             if 'udem' in file_path:
                 label_name = file_path.split('/')[-2]
             # elif 'nsynth' in file_path:
@@ -209,11 +212,16 @@ class AudioDataset():
             one_hot_label[label] = 1
             # print(one_hot_label, label, label_name)
 
-            ##TODO: fix make special case for image classifier.
             if self.use_rgb:
+                logging.info(f"Features 1 shape: {features.shape}")
+                logging.info(f"Features 2 shape: {features.shape}")
                 features = np.concatenate(3*[features]) #Single channel to 3 channel
-
             features = torch.tensor(features)
+            features = torchvision.transforms.ToPILImage()(features)
+
+            if self.transforms:
+                features = self.transforms(features)
+            features = torchvision.transforms.ToTensor()(features)
             label = torch.tensor(label)
             if self.return_tuple:
                 if self.return_tuple_of3:

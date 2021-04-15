@@ -96,6 +96,7 @@ dataset:
       - Turphi_call
       - Turphi_song
 
+  transforms: image_base
   resize: false
   return_tuple: true
   return_tuple_of3: true
