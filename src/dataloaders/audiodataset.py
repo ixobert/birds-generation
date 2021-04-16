@@ -16,6 +16,7 @@ import sklearn.preprocessing
 import warnings
 
 import torchvision
+import albumentations as A
 warnings.filterwarnings('ignore', 'PySoundFile failed. Trying audioread instead.')
 try:
     from helpers import specgram, ispecgram
@@ -215,11 +216,14 @@ class AudioDataset():
             if self.use_rgb:
                 features = np.concatenate(3*[features]) #Single channel to 3 channel
 
-            # features = torch.tensor(features)
-            # features = torchvision.transforms.ToPILImage()(features)
-
             if self.transforms:
+                features = np.transpose(features, (1,2,0))
+                original_shape = features.shape
                 features = self.transforms(image=features)['image']
+                features = A.Resize(height=original_shape[0], width=original_shape[1])(image=features)['image']
+                features = np.transpose(features, (2,0,1))
+
+
             # features = torchvision.transforms.ToTensor()(features)
             features = torch.tensor(features)
             label = torch.tensor(label)
