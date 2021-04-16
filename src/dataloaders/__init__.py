@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 import torch
 import torchvision
+import albumentations as A
 try:
     from imagedataset import ImageDataset
     from audiodataset import AudioDataset
@@ -56,8 +57,13 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.batch_size = self.config.get('batch_size', 2)
 
     @classmethod
-    def _custom_collate(self, batch):
-        batch = list(filter ( lambda x: None not in x, batch))
+    def _custom_collate(self, batch_):
+        def contains_none(b):
+            for elem in b:
+                if elem is None:
+                    return False
+            return True
+        batch = list(filter(lambda x: contains_none(x), batch_))
         input = torch.stack([b[0] for b in batch])
         label = torch.stack([b[1] for b in batch])
         if len(batch[0]) == 2:
@@ -68,9 +74,8 @@ class SpectrogramsDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         transforms = self.config.get('transforms', None)
         if transforms == "image_base":
-            transforms = torchvision.transforms.Compose([
-                # torchvision.transforms.ToPILImage(),
-                torchvision.transforms.RandomRotation(0.5)
+            transforms = A.Compose([
+                    A.RandomBrightnessContrast(p=0.2),
                 ])
 
         self.dataset      = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transforms=transforms)

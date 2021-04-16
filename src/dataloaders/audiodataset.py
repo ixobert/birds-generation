@@ -186,7 +186,6 @@ class AudioDataset():
             if audio is None:
                 if file_path.endswith('.npy'):
                     features = np.load(file_path) 
-                    features= np.expand_dims(features,0)
                 else:
                     audio = self.load_audio(file_path, self.sr, self.window_length)
                 
@@ -199,6 +198,7 @@ class AudioDataset():
                     else:
                         features = audio
             
+            features= np.expand_dims(features,0)
             if 'udem' in file_path:
                 label_name = file_path.split('/')[-2]
             # elif 'nsynth' in file_path:
@@ -214,12 +214,14 @@ class AudioDataset():
 
             if self.use_rgb:
                 features = np.concatenate(3*[features]) #Single channel to 3 channel
-            features = torch.tensor(features)
-            features = torchvision.transforms.ToPILImage()(features)
+
+            # features = torch.tensor(features)
+            # features = torchvision.transforms.ToPILImage()(features)
 
             if self.transforms:
-                features = self.transforms(features)
-            features = torchvision.transforms.ToTensor()(features)
+                features = self.transforms(image=features)['image']
+            # features = torchvision.transforms.ToTensor()(features)
+            features = torch.tensor(features)
             label = torch.tensor(label)
             if self.return_tuple:
                 if self.return_tuple_of3:
