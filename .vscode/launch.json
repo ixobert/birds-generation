@@ -76,6 +76,19 @@
                      "log_frequency=1",
                      "dataset.num_workers=0"
             ]
+        },
+        {
+            "name": "Generate Samples",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/generate_samples.py",
+            "console": "integratedTerminal",
+            "args": ["--model_path",
+                    "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
+                    "--augmentations",
+                    "noise,interpolation,extrapolation"
+            ]
         }
+
     ]
 }
