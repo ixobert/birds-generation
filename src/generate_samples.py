@@ -1,5 +1,4 @@
 import os
-from albumentations import augmentations
 import pytorch_lightning as pl
 import logging
 import os
@@ -23,7 +22,7 @@ parser = argparse.ArgumentParser(description="Data Augmentator")
 parser.add_argument('--model_path')
 parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
 parser.add_argument('--augmentations', default="noise")
-parser.add_argument('--num_samples', default= 10)
+parser.add_argument('--num_samples', type=int, default= 10)
 parser.add_argument('--device', default='cpu')
 
 class Augmentations():
@@ -33,6 +32,7 @@ class Augmentations():
         'extrapolation',
         ]
 
+    #Fix: Similar Generate samples are overwritten
 
     @classmethod
     def encode(self, model, img, device='cuda:0'):
@@ -72,7 +72,7 @@ class Augmentations():
 
             filename, ext = os.path.splitext(sample_path)
             outfile = f"{filename}_noise{ratio}{ext}"
-            np.save(outfile, reconstructed)
+            # np.save(outfile, reconstructed)
 
 
     @classmethod
@@ -99,7 +99,7 @@ class Augmentations():
                 reconstructed = reconstructed[:,:-4]
 
                 filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}_interpolation{ratio}{ext}"
+                outfile = f"{filename}_interpolation{ratio}-{os.path.basename(sample_path1)}{ext}"
                 np.save(outfile, reconstructed)
                 count += 1
 
@@ -128,21 +128,21 @@ class Augmentations():
                 reconstructed = reconstructed[:,:-4]
 
                 filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}_extrapolation{ratio}{ext}"
+                outfile = f"{filename}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
                 np.save(outfile, reconstructed)
                 count += 1
 
 
 def main() -> None:
     args = parser.parse_args()
-    model = VQEngine.load_from_checkpoint(args.model_path)
+    model = VQEngine.load_from_checkpoint(args.model_path).to(args.device)
     all_samples_paths = glob.glob(args.data_paths)
     aug_methods_names = args.augmentations.split(',')
     for aug_method_name in aug_methods_names:
         if aug_method_name not in Augmentations.all_methods:
             raise NotImplementedError
         func = getattr(Augmentations, aug_method_name)
-        func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, generation_count=args.num_samples, device=args.device)
+        func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, generation_count=int(args.num_samples), device=args.device)
 
 
 if __name__ == "__main__":
