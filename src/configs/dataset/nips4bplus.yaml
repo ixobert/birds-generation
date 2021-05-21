@@ -8,23 +8,26 @@ dataset:
 
   batch_size: 32
   classes_name: 
-      - Cisjun_song
-      - Colpal_song
-      - Embcir_song
-      - Fricoe_song
-      - Galcri_song
-      - Oriori_song
-      - Petpet_song
-      - Phofem_song
-      - Phycol_song
-      - Poepal_song
-      - Prumod_song
-      - Serser_song
-      - Siteur_song
-      - Strdec_song
-      - Strtur_song
-      - Sylatr_song
-      - Tetpyg_song
+      - Aegcau_call
+      - Butbut_call
+      - Cerbra_call
+      - Denmaj_call
+      - Embcir_call
+      - Erirub_call
+      - Fricoe_call
+      - Galcri_call
+      - Lopcri_call
+      - Loxcur_call
+      - Lusmeg_call
+      - Parate_call
+      - Parmaj_call
+      - Pelgra_call
+      - Petpet_call
+      - Picpic_call
+      - Poepal_call
+      - Regign_call
+      - Sylund_call
+      - Turmer_call
 
   transforms: ''
   resize: false
