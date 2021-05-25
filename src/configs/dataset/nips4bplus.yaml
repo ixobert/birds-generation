@@ -8,33 +8,32 @@ dataset:
 
   batch_size: 32
   classes_name: 
-      - Carcan_call
-      - Carcar_call
-      - Cerbra_call
-      - Denmaj_call
+      - Carcan_song
+      - Carcar_song
+      - Cerbra_song
       - Denmaj_drum
-      - Embcir_call
-      - Erirub_call
-      - Fricoe_call
-      - Galcri_call
-      - Galthe_call
-      - Lusmeg_call
-      - Oriori_call
-      - Parate_call
-      - Parcae_call
-      - Parmaj_call
-      - Petpet_call
-      - Phycol_call
-      - Poepal_call
-      - Regign_call
-      - Serser_call
-      - Siteur_call
-      - Sylatr_call
-      - Sylcan_call
-      - Sylmel_call
-      - Sylund_call
-      - Turmer_call
-      - Turphi_call
+      - Embcir_song
+      - Erirub_song
+      - Fricoe_song
+      - Galcri_song
+      - Galthe_song
+      - Lusmeg_song
+      - Oriori_song
+      - Parate_song
+      - Parcae_song
+      - Parmaj_song
+      - Petpet_song
+      - Phycol_song
+      - Poepal_song
+      - Regign_song
+      - Serser_song
+      - Siteur_song
+      - Sylatr_song
+      - Sylcan_song
+      - Sylmel_song
+      - Sylund_song
+      - Turmer_song
+      - Turphi_song
 
   transforms: ''
   resize: false
