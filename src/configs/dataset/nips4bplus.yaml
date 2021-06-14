@@ -10,30 +10,9 @@ dataset:
   classes_name: 
       - Carcan_song
       - Carcar_song
-      - Cerbra_song
-      - Denmaj_drum
-      - Embcir_song
-      - Erirub_song
-      - Fricoe_song
       - Galcri_song
-      - Galthe_song
-      - Lusmeg_song
-      - Oriori_song
-      - Parate_song
-      - Parcae_song
       - Parmaj_song
-      - Petpet_song
-      - Phycol_song
-      - Poepal_song
-      - Regign_song
-      - Serser_song
-      - Siteur_song
-      - Sylatr_song
-      - Sylcan_song
-      - Sylmel_song
-      - Sylund_song
-      - Turmer_song
-      - Turphi_song
+
 
   transforms: ''
   resize: false
