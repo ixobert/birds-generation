@@ -8,10 +8,10 @@ dataset:
 
   batch_size: 32
   classes_name: 
-      - Carcan_song
-      - Carcar_song
-      - Galcri_song
-      - Parmaj_song
+      - Carcan_call
+      - Carcar_call
+      - Galcri_call
+      - Parmaj_call
 
 
   transforms: ''
