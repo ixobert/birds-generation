@@ -135,9 +135,9 @@ def main(cfg: DictConfig) -> None:
     num_classes = len(class_names)
 
     if "efficientnet" in backbone_network:
-        model = networks.EfficientNet.from_pretrained(backbone_network, num_classes=num_classes)
+        model = networks.EfficientNetPl(backbone_network, num_classes=num_classes)
     elif backbone_network in FLASH_MODELS:
-        model = ImageClassifier(num_classes=num_classes, backbone=backbone_network)
+        model = ImageClassifier(num_classes=num_classes, backbone=backbone_network, optimizer=torch.optim.Adam)
     else:
         raise NotImplementedError(f"Network: `{backbone_network}` not implemented.")
 

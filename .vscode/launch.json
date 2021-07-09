@@ -66,13 +66,15 @@
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_classifier.py",
             "console": "integratedTerminal",
-            "args": ["working_dir=./outputs", 
+            "args": [
+                    "--multirun",
+                    "working_dir=./outputs", 
                      "debug=True",
-                     "nb_epochs=10", 
+                     "nb_epochs=2", 
                      "dataset=nips4bplus",
                      "dataset.root_dir=/Users/test/Documents/Projects/Master/nips4bplus",
                      "dataset.return_tuple_of3=false",
-                     "backbone_network=resnet18",
+                     "backbone_network=resnet18,resnext50_32x4d,resnext101_32x8d,mobilenet_v2,densenet161",
                      "log_frequency=1",
                      "dataset.num_workers=0"
             ]

@@ -12,7 +12,8 @@ dataset:
       - Carcar_song
       - Galcri_song
       - Parmaj_song
-
+      - Erirub_song
+      - Sylmel_song
 
   transforms: ''
   resize: false
