@@ -34,6 +34,7 @@ def show_spectrogram2(*args, **kwargs):
     plt.figure(figsize=(15, 5))
     librosa.display.specshow(*args, **kwargs)
 
+
 def show_spectogram(y, sr):
     try:
         plt.figure(figsize=(30,20))
