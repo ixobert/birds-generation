@@ -155,7 +155,8 @@ def main(cfg: DictConfig) -> None:
 
     # 5. Fit the model
     logging.info("Training...")
-    trainer.fit(model, datamodule=datamodule)
+    datamodule.setup()
+    trainer.fit(model, train_dataloader=datamodule.train_dataloader(), val_dataloaders=datamodule.val_dataloader())
     
     logging.info("Testing...")
     logging.info("\tLoad best model...")
