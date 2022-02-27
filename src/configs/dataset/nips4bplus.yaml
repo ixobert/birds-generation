@@ -1,9 +1,9 @@
 dataset:
   num_workers: 6
   root_dir: '/media/future/Rapido/NIPS4B_BIRD_CHALLENGE_TRAIN_TEST_WAV/birds-generation-classification/'
-  train_path: '${dataset.root_dir}/train.txt'
-  val_path: '${dataset.root_dir}/test.txt'
-  test_path: '${dataset.root_dir}/test.txt'
+  train_path: '${dataset.root_dir}/cleaned_train.txt'
+  val_path: '${dataset.root_dir}/cleaned_test.txt'
+  test_path: '${dataset.root_dir}/cleaned_test.txt'
   lmdb_path: ''
 
   batch_size: 32
