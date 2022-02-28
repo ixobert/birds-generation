@@ -8,12 +8,22 @@ dataset:
 
   batch_size: 32
   classes_name: 
-      - Carcan_call
-      - Carcar_call
-      - Galcri_call
-      - Parmaj_call
-      - Erirub_call
-      - Sylmel_call
+      # - Carcan_call
+      # - Carcar_call
+      # - Galcri_call
+      # - Parmaj_call
+      # - Erirub_call
+      # - Sylmel_call
+    - Erirub_song
+    - Turphi_song
+    - Turmer_call
+    - Parate_song
+    - Sylcan_song
+    - Galcri_call
+    - Cetcet_song
+    - Alaarv_song
+    - Sylcan_call
+    - Serser_song
 
   transforms: ''
   resize: false
