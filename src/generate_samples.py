@@ -72,7 +72,7 @@ class Augmentations():
 
             filename, ext = os.path.splitext(sample_path)
             outfile = f"{filename}_noise{ratio}{ext}"
-            # np.save(outfile, reconstructed)
+            np.save(outfile, reconstructed)
 
 
     @classmethod
@@ -143,6 +143,7 @@ def main() -> None:
             raise NotImplementedError
         func = getattr(Augmentations, aug_method_name)
         func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, generation_count=int(args.num_samples), device=args.device)
+    
 
 
 if __name__ == "__main__":
