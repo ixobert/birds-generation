@@ -1,4 +1,5 @@
 import os
+from random import random
 import pytorch_lightning as pl
 import logging
 import os
@@ -20,7 +21,8 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description="Data Augmentator")
 parser.add_argument('--model_path')
-parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
+# parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
+parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/splits_new/cleaned_train/*/*.npy", help="Spectrogram(2d numpy) path list.")
 parser.add_argument('--augmentations', default="noise")
 parser.add_argument('--num_samples', type=int, default= 10)
 parser.add_argument('--device', default='cpu')
@@ -60,19 +62,19 @@ class Augmentations():
         all_samples_paths = [x for x in all_samples_paths if 'noise' not in os.path.basename(x)]
 
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            if i >= generation_count:
-                break
+            for j in range(generation_count):
 
-            spectrogram = torch.tensor(self.load_sample(sample_path))
-            q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-            new_q_t = ratio*torch.randn_like(q_t) + q_t
-            new_q_b = ratio*torch.randn_like(q_b) + q_b
-            reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
-            reconstructed = reconstructed[:,:-4]
+                ratio = random.rand(0,1)
+                spectrogram = torch.tensor(self.load_sample(sample_path))
+                q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
+                new_q_t = ratio*torch.randn_like(q_t) + q_t
+                new_q_b = ratio*torch.randn_like(q_b) + q_b
+                reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                reconstructed = reconstructed[:,:-4]
 
-            filename, ext = os.path.splitext(sample_path)
-            outfile = f"{filename}_noise{ratio}{ext}"
-            np.save(outfile, reconstructed)
+                filename, ext = os.path.splitext(sample_path)
+                outfile = f"{filename}-{j}_noise{ratio}{ext}"
+                np.save(outfile, reconstructed)
 
 
     @classmethod
@@ -81,27 +83,27 @@ class Augmentations():
 
         count = 0
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            for j, sample_path1 in enumerate(all_samples_paths):
-                if sample_path == sample_path1:
-                    continue
-                if count >= generation_count:
-                    break
+            for j in range(generation_count):
+                for k, sample_path1 in enumerate(all_samples_paths):
+                    if sample_path == sample_path1:
+                        continue
 
-                spectrogram = torch.tensor(self.load_sample(sample_path))
-                spectrogram1 = torch.tensor(self.load_sample(sample_path1))
+                    ratio = random.rand(0,1)
+                    spectrogram = torch.tensor(self.load_sample(sample_path))
+                    spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-                q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-                q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
-                new_q_t = (q_t1 - q_t)*ratio + q_t
-                new_q_b = (q_b1 - q_b)*ratio + q_b
+                    q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
+                    q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+                    new_q_t = (q_t1 - q_t)*ratio + q_t
+                    new_q_b = (q_b1 - q_b)*ratio + q_b
 
-                reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
-                reconstructed = reconstructed[:,:-4]
+                    reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                    reconstructed = reconstructed[:,:-4]
 
-                filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}_interpolation{ratio}-{os.path.basename(sample_path1)}{ext}"
-                np.save(outfile, reconstructed)
-                count += 1
+                    filename, ext = os.path.splitext(sample_path)
+                    outfile = f"{filename}-{k}_interpolation{ratio}-{os.path.basename(sample_path1)}{ext}"
+                    np.save(outfile, reconstructed)
+                    count += 1
 
 
     @classmethod
@@ -110,27 +112,26 @@ class Augmentations():
 
         count = 0
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            for j, sample_path1 in enumerate(all_samples_paths):
-                if sample_path == sample_path1:
-                    continue
-                if count >= generation_count:
-                    break
+            for j in range(generation_count):
+                for k, sample_path1 in enumerate(all_samples_paths):
+                    if sample_path == sample_path1:
+                        continue
 
-                spectrogram = torch.tensor(self.load_sample(sample_path))
-                spectrogram1 = torch.tensor(self.load_sample(sample_path1))
+                    ratio = random.rand(0,1)
+                    spectrogram = torch.tensor(self.load_sample(sample_path))
+                    spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-                q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-                q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
-                new_q_t = (q_t - q_t1)*ratio + q_t
-                new_q_b = (q_b - q_b1)*ratio + q_b
+                    q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
+                    q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+                    new_q_t = (q_t - q_t1)*ratio + q_t
+                    new_q_b = (q_b - q_b1)*ratio + q_b
 
-                reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
-                reconstructed = reconstructed[:,:-4]
+                    reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                    reconstructed = reconstructed[:,:-4]
 
-                filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
-                np.save(outfile, reconstructed)
-                count += 1
+                    filename, ext = os.path.splitext(sample_path)
+                    outfile = f"{filename}-{k}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
+                    np.save(outfile, reconstructed)
 
 
 def main() -> None:
