@@ -1,8 +1,10 @@
+from copy import deepcopy
 import os
-from random import random
+import random
 import pytorch_lightning as pl
 import logging
 import os
+from scipy import rand
 
 from torch._C import device
 os.environ['HYDRA_FULL_ERROR'] = '1'
@@ -31,7 +33,7 @@ class Augmentations():
     all_methods = [
         'noise',
         'interpolation',
-        'extrapolation',
+        # 'extrapolation',
         ]
 
     #Fix: Similar Generate samples are overwritten
@@ -64,7 +66,7 @@ class Augmentations():
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
             for j in range(generation_count):
 
-                ratio = random.rand(0,1)
+                ratio = random.random() #Generate number in [0,1)
                 spectrogram = torch.tensor(self.load_sample(sample_path))
                 q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
                 new_q_t = ratio*torch.randn_like(q_t) + q_t
@@ -73,7 +75,7 @@ class Augmentations():
                 reconstructed = reconstructed[:,:-4]
 
                 filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}-{j}_noise{ratio}{ext}"
+                outfile = f"{filename}-{j}_noise{ratio:.2f}{ext}"
                 np.save(outfile, reconstructed)
 
 
@@ -81,14 +83,20 @@ class Augmentations():
     def interpolation(self, model, all_samples_paths, ratio=0.5, generation_count=10, device='cpu'):
         all_samples_paths = [x for x in all_samples_paths if 'interpolation' not in os.path.basename(x)]
 
-        count = 0
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            for j in range(generation_count):
-                for k, sample_path1 in enumerate(all_samples_paths):
-                    if sample_path == sample_path1:
-                        continue
+            count = 0
+            tmp_all_samples_paths = deepcopy(all_samples_paths)
+            random.shuffle(tmp_all_samples_paths)
 
-                    ratio = random.rand(0,1)
+            for k, sample_path1 in enumerate(tmp_all_samples_paths):
+                if count >= generation_count:
+                    break
+                if sample_path == sample_path1:
+                        continue
+                sample_class = sample_path.split(os.sep)[-2]
+                sample_class1 = sample_path1.split(os.sep)[-2]
+                if sample_class == sample_class1:
+                    ratio = random.random() #Generate number in [0,1)
                     spectrogram = torch.tensor(self.load_sample(sample_path))
                     spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
@@ -101,37 +109,37 @@ class Augmentations():
                     reconstructed = reconstructed[:,:-4]
 
                     filename, ext = os.path.splitext(sample_path)
-                    outfile = f"{filename}-{k}_interpolation{ratio}-{os.path.basename(sample_path1)}{ext}"
+                    outfile = f"{filename}-{k}_interpolation{ratio:.2f}-{os.path.basename(sample_path1)}{ext}"
                     np.save(outfile, reconstructed)
                     count += 1
 
 
-    @classmethod
-    def extrapolation(self, model, all_samples_paths, ratio=0.5, generation_count=10, device='cpu'):
-        all_samples_paths = [x for x in all_samples_paths if 'extrapolation' not in os.path.basename(x)]
+    # @classmethod
+    # def extrapolation(self, model, all_samples_paths, ratio=0.5, generation_count=10, device='cpu'):
+    #     all_samples_paths = [x for x in all_samples_paths if 'extrapolation' not in os.path.basename(x)]
 
-        count = 0
-        for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            for j in range(generation_count):
-                for k, sample_path1 in enumerate(all_samples_paths):
-                    if sample_path == sample_path1:
-                        continue
+    #     count = 0
+    #     for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
+    #         for j in range(generation_count):
+    #             for k, sample_path1 in enumerate(all_samples_paths):
+    #                 if sample_path == sample_path1:
+    #                     continue
 
-                    ratio = random.rand(0,1)
-                    spectrogram = torch.tensor(self.load_sample(sample_path))
-                    spectrogram1 = torch.tensor(self.load_sample(sample_path1))
+    #                 ratio = random.rand(0,1)
+    #                 spectrogram = torch.tensor(self.load_sample(sample_path))
+    #                 spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-                    q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-                    q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
-                    new_q_t = (q_t - q_t1)*ratio + q_t
-                    new_q_b = (q_b - q_b1)*ratio + q_b
+    #                 q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
+    #                 q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+    #                 new_q_t = (q_t - q_t1)*ratio + q_t
+    #                 new_q_b = (q_b - q_b1)*ratio + q_b
 
-                    reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
-                    reconstructed = reconstructed[:,:-4]
+    #                 reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+    #                 reconstructed = reconstructed[:,:-4]
 
-                    filename, ext = os.path.splitext(sample_path)
-                    outfile = f"{filename}-{k}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
-                    np.save(outfile, reconstructed)
+    #                 filename, ext = os.path.splitext(sample_path)
+    #                 outfile = f"{filename}-{k}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
+    #                 np.save(outfile, reconstructed)
 
 
 def main() -> None:

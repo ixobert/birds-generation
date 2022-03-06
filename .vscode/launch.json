@@ -88,7 +88,7 @@
             "args": ["--model_path",
                     "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
                     "--augmentations",
-                    "noise,interpolation,extrapolation"
+                    "interpolation"
             ]
         }
 
