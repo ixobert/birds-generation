@@ -1,5 +1,6 @@
 import sys
 import os
+import traceback
 import wandb
 from typing import List
 import logging
@@ -7,7 +8,7 @@ import librosa
 os.environ['HYDRA_FULL_ERROR'] = '1'
 import hydra
 from omegaconf import DictConfig
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_auc_score
 import torch
 import flash
 from flash.vision import ImageClassificationData, ImageClassifier
@@ -190,7 +191,13 @@ def main(cfg: DictConfig) -> None:
                 test_log_metrics.update({ f"{metric_name}/{cls_name}": metric_value })
         else:
             test_log_metrics.update({ f"{cls_name}": metric})
-
+    test_log_metrics['roc_auc'] = -1 
+    try:
+        test_log_metrics['roc_auc'] = roc_auc_score(targets, predictions)
+    except Exception as e:
+        print("Error while compute ROC_AUC...")
+        print(traceback.format_exc())
+        pass
     logger.log_metrics(test_log_metrics)
     logging.info(test_log_metrics)
 
