@@ -193,7 +193,7 @@ def main(cfg: DictConfig) -> None:
             test_log_metrics.update({ f"{cls_name}": metric})
     test_log_metrics['roc_auc'] = -1 
     try:
-        test_log_metrics['roc_auc'] = roc_auc_score(targets, predictions)
+        test_log_metrics['roc_auc'] = roc_auc_score(targets, predictions, average='macro', multi_class="ovr", labels=class_names)
     except Exception as e:
         print("Error while compute ROC_AUC...")
         print(traceback.format_exc())
