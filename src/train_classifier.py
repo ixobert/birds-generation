@@ -146,6 +146,8 @@ def main(cfg: DictConfig) -> None:
 
     logging.info(cfg)
     DEVICE = cfg['gpus']
+    if isinstance(DEVICE, list) and len(DEVICE) == 1:
+        DEVICE = DEVICE[0]
     # datamodule = get_data(cfg)
     datamodule = SpectrogramsDataModule(config=cfg['dataset'])
 
