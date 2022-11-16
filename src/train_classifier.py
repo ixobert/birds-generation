@@ -119,7 +119,7 @@ def mixup_data(x, y, alpha=1.0, use_cuda=True):
 
     batch_size = x.size()[0]
     if use_cuda:
-        index = torch.randperm(batch_size).cuda()
+        index = torch.randperm(batch_size).cuda(DEVICE)
     else:
         index = torch.randperm(batch_size)
 
@@ -145,6 +145,7 @@ def main(cfg: DictConfig) -> None:
                         name=cfg['run_name'], tags=cfg['tags'])
 
     logging.info(cfg)
+    DEVICE = cfg['gpus']
     # datamodule = get_data(cfg)
     datamodule = SpectrogramsDataModule(config=cfg['dataset'])
 
@@ -184,6 +185,7 @@ def main(cfg: DictConfig) -> None:
         raise NotImplementedError(
             f"Network: `{backbone_network}` not implemented.")
 
+    model = model.to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), )
 
     accuracy = Accuracy()
@@ -211,6 +213,8 @@ def main(cfg: DictConfig) -> None:
         metrics = defaultdict(list)
         for batch in tqdm(datamodule.train_dataloader()):
             x, y = batch
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
             if augmentation_mode == "mixup":
                 x, y_a, y_b, lam = mixup_data(
                     x, y, 1.0, use_cuda=torch.cuda.is_available())
@@ -218,8 +222,6 @@ def main(cfg: DictConfig) -> None:
             preds = torch.softmax(logits, dim=-1)
 
             if augmentation_mode == "mixup":
-                x, y_a, y_b, lam = mixup_data(
-                    x, y, 1.0, use_cuda=torch.cuda.is_available())
                 loss = mixup_criterion(
                     criterion=F.cross_entropy, pred=logits, y_a=y_a, y_b=y_b, lam=lam)
             else:
