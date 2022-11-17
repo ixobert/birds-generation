@@ -132,4 +132,4 @@ datasets
 wandb
 .DS_Store
 future_artifacts
-data
+data/
