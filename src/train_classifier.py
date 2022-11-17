@@ -224,6 +224,8 @@ def main(cfg: DictConfig) -> None:
                     criterion=F.cross_entropy, pred=logits, y_a=y_a, y_b=y_b, lam=lam)
             else:
                 loss = F.cross_entropy(input=logits, target=y)
+            preds = preds.to('cpu')
+            y = y.to('cpu')
             accuracy_score = accuracy(preds, y)
             f1_score = f1(preds, y)
             metrics['train_loss'].append(loss.item())
@@ -240,9 +242,14 @@ def main(cfg: DictConfig) -> None:
             x, y = batch
             with torch.no_grad():
                 x, y = batch
+                x = x.to(DEVICE)
+                y = y.to(DEVICE)
                 logits = model(x)
                 preds = torch.softmax(logits, dim=-1)
                 loss = F.cross_entropy(input=logits, target=y)
+
+                preds = preds.to('cpu')
+                y = y.to('cpu')
                 accuracy_score = accuracy(preds, y)
                 f1_score = f1(preds, y)
                 metrics['val_loss'].append(loss.item())
