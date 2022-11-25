@@ -100,10 +100,11 @@ def get_data(cfg):
     return datamodule
 
 
-def evaluate_model(model, dataloader):
+def evaluate_model(model, dataloader, device='cpu'):
     targets = []
     predictions = []
     for features, labels in dataloader():
+        features = features.to(device)
         out = model.predict(features)
         predictions.extend(out)
         targets.extend(labels.numpy())
@@ -300,7 +301,7 @@ def main(cfg: DictConfig) -> None:
     model.load_state_dict(best_weight)
 
     logging.info("\tInference...")
-    predictions, targets = evaluate_model(model, datamodule.test_dataloader)
+    predictions, targets = evaluate_model(model, datamodule.test_dataloader, device=DEVICE)
     logger.experiment.log({"confusion_matrix": wandb.plot.confusion_matrix(
         probs=None,
         y_true=targets,
