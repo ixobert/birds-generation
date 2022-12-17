@@ -171,9 +171,7 @@ def main(cfg: DictConfig) -> None:
 
     class_names = cfg['dataset']['classes_name']
     backbone_network = cfg['backbone_network']
-    augmentation_mode = cfg['dataset'].get('augmentation_mode', {})
-    augmentation_mode['mixup'] = augmentation_mode.get('mixup', False)
-    augmentation_mode['specaug'] = augmentation_mode.get('specaug', [])
+    augmentation_mode = cfg['dataset'].get('augmentation_mode', [])
     logging.info(f"Augmentation mode: {augmentation_mode}.")
     num_classes = len(class_names)
 
@@ -220,13 +218,13 @@ def main(cfg: DictConfig) -> None:
             x, y = batch
             x = x.to(DEVICE)
             y = y.to(DEVICE)
-            if augmentation_mode['mixup']:
+            if 'mixup' in augmentation_mode:
                 x, y_a, y_b, lam = mixup_data(
                     x, y, 1.0, device=DEVICE)
             logits = model(x)
             preds = torch.softmax(logits, dim=-1)
 
-            if augmentation_mode['mixup']:
+            if 'mixup' in augmentation_mode:
                 loss = mixup_criterion(
                     criterion=F.cross_entropy, pred=logits, y_a=y_a, y_b=y_b, lam=lam)
             else:
