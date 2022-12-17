@@ -185,7 +185,6 @@ def main(cfg: DictConfig) -> None:
         raise NotImplementedError(
             f"Network: `{backbone_network}` not implemented.")
 
-
     model = model.to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), )
 
