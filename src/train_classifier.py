@@ -26,9 +26,11 @@ try:
     import networks
     from dataloaders import SpectrogramsDataModule
     from dataloaders.audiodataset import AudioDataset
+    from dataloaders.rawaudiodataset import RawAudioDataset
 except ImportError:
     from src import networks
     from src.dataloaders.audiodataset import AudioDataset
+    from src.dataloaders.rawaudiodataset import RawAudioDataset
     from src.dataloaders import SpectrogramsDataModule
 
 
@@ -146,7 +148,6 @@ def main(cfg: DictConfig) -> None:
     logging.info(cfg)
     DEVICE = cfg['gpus'][0]
     # datamodule = get_data(cfg)
-    datamodule = SpectrogramsDataModule(config=cfg['dataset'])
 
     # 3. Build the model
     FLASH_MODELS = [
@@ -170,7 +171,9 @@ def main(cfg: DictConfig) -> None:
 
     class_names = cfg['dataset']['classes_name']
     backbone_network = cfg['backbone_network']
-    augmentation_mode = cfg['dataset'].get('augmentation_mode', None)
+    augmentation_mode = cfg['dataset'].get('augmentation_mode', {})
+    augmentation_mode['mixup'] = augmentation_mode.get('mixup', False)
+    augmentation_mode['specaug'] = augmentation_mode.get('specaug', [])
     logging.info(f"Augmentation mode: {augmentation_mode}.")
     num_classes = len(class_names)
 
@@ -183,6 +186,7 @@ def main(cfg: DictConfig) -> None:
     else:
         raise NotImplementedError(
             f"Network: `{backbone_network}` not implemented.")
+
 
     model = model.to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), )
@@ -204,6 +208,8 @@ def main(cfg: DictConfig) -> None:
 
     # 5. Fit the model
     logging.info("Training...")
+
+    datamodule = SpectrogramsDataModule(config=cfg['dataset'])
     datamodule.setup()
 
     # Implement custom training loop and apply mixup aug.
@@ -214,13 +220,13 @@ def main(cfg: DictConfig) -> None:
             x, y = batch
             x = x.to(DEVICE)
             y = y.to(DEVICE)
-            if augmentation_mode == "mixup":
+            if augmentation_mode['mixup']:
                 x, y_a, y_b, lam = mixup_data(
                     x, y, 1.0, device=DEVICE)
             logits = model(x)
             preds = torch.softmax(logits, dim=-1)
 
-            if augmentation_mode == "mixup":
+            if augmentation_mode['mixup']:
                 loss = mixup_criterion(
                     criterion=F.cross_entropy, pred=logits, y_a=y_a, y_b=y_b, lam=lam)
             else:

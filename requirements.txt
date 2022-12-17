@@ -13,3 +13,4 @@ sklearn
 lmdb
 matplotlib
 streamlit
+torchaudio==0.13.0

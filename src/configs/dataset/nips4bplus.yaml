@@ -25,7 +25,13 @@ dataset:
     - Sylcan_call
     - Serser_song
 
-  transforms: ''
+  augmentation_mode:
+    masking: 10
+    timeMasking: 10
+    freqMasking: 80
+    # mixup: 0.2
+    # image_base: true
+
   resize: false
   return_tuple: true
   return_tuple_of3: true
