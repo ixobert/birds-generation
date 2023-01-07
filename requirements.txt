@@ -4,7 +4,7 @@ torchaudio
 torchvision
 pytorch_lightning==1.8.6
 lightning-flash==0.8.1
-lightning-flash['image']
+lightning-flash["image"]
 torchmetrics==0.9.3
 albumentations
 wandb
