@@ -26,11 +26,11 @@ dataset:
     - Serser_song
 
   augmentation_mode:
-    masking: 10
-    timeMasking: 10
-    freqMasking: 80
-    # mixup: 0.2
-    # image_base: true
+    - masking
+    - timeMasking
+    - freqMasking
+    # - mixup
+    # - image_base
 
   resize: false
   return_tuple: true

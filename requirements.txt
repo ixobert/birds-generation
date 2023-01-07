@@ -1,9 +1,12 @@
 pytest
-# torch==1.7.1
-# torchvision==0.8.2
-pytorch_lightning==1.2.0rc0
-# lightning-flash
-albumentations==0.5.2
+torch==1.13.1
+torchaudio
+torchvision
+pytorch_lightning==1.8.6
+lightning-flash
+lightning-flash['image']
+torchmetrics==0.9.3
+albumentations
 wandb
 hydra-core
 opencv-python
@@ -13,4 +16,3 @@ sklearn
 lmdb
 matplotlib
 streamlit
-torchaudio==0.13.0

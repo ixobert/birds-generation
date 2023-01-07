@@ -1,6 +1,9 @@
 import os
 import random
 random.seed(42)
+import cv2
+import torch
+import torchvision
 import torchaudio
 
 class RawAudioDataset:
@@ -33,12 +36,9 @@ class RawAudioDataset:
         print("Data paths: ", len(self.data_paths))
         for audio_path, cls  in self.data_paths:
             audio_sample, orig_sr = torchaudio.load(audio_path)
-            # audio_sample = torchaudio.functional.resample(audio_sample, orig_sr, self.sr)
-
             if self.use_spectrogram:
-                audio_sample = torchaudio.transforms.Spectrogram(n_fft=1024,)(audio_sample)
+                audio_sample = torchaudio.transforms.Spectrogram(n_fft=1024)(audio_sample)
             self.data.append([audio_sample, self.classes_name.index(cls)])
-    
 
     def __len__(self,):
         """Return the number of data."""
@@ -48,7 +48,9 @@ class RawAudioDataset:
     def __getitem__(self, idx):
         """Return one data pair (audio and label)."""
         audio, label = self.data[idx]
+        label = torch.tensor(label, dtype=torch.long)
         if self.transform:
             audio = self.transform(audio)
+        audio = audio.expand(3, audio.shape[1], audio.shape[2])
         return audio, label
-    
+

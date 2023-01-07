@@ -5,8 +5,7 @@ from PIL import Image
 from tqdm import tqdm
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger as Logger
-from flash.vision import ImageClassificationData, ImageClassifier
-import flash
+from flash.image.classification import ImageClassifier
 import torch
 from sklearn.metrics import classification_report, roc_auc_score
 from omegaconf import DictConfig
@@ -20,7 +19,7 @@ import logging
 import librosa
 import numpy as np
 import torch.nn.functional as F
-from pytorch_lightning.metrics import Accuracy, F1
+from torchmetrics import Accuracy, F1Score as F1
 os.environ['HYDRA_FULL_ERROR'] = '1'
 try:
     import networks
