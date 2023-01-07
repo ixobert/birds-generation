@@ -3,7 +3,7 @@ torch==1.13.1
 torchaudio
 torchvision
 pytorch_lightning==1.8.6
-lightning-flash
+lightning-flash==0.8.1
 lightning-flash['image']
 torchmetrics==0.9.3
 albumentations
