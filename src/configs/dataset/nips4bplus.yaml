@@ -26,9 +26,9 @@ dataset:
     - Serser_song
 
   augmentation_mode:
-    - masking
-    - timeMasking
-    - freqMasking
+    # - masking
+    # - timeMasking
+    # - freqMasking
     # - mixup
     # - image_base
 
