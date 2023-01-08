@@ -106,7 +106,10 @@ def evaluate_model(model, dataloader, device='cpu'):
     predictions = []
     for features, labels in dataloader():
         features = features.to(device)
-        out = model.predict(features)
+        out = model(features)
+        out = torch.softmax(out, dim=-1)
+        out = torch.argmax(out, dim=-1)
+        out = out.tolist()
         predictions.extend(out)
         targets.extend(labels.numpy())
     return predictions, targets
