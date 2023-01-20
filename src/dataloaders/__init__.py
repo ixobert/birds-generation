@@ -1,5 +1,5 @@
 import os
-from albumentations import RandomScale
+from albumentations import RandomScale, Rotate, GaussNoise, GaussianBlur
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 import torch
@@ -82,28 +82,34 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         transforms_ops = []
         if 'image_base' in transforms:
             transforms_ops = A.Compose([
-                    A.RandomScale(),
-                    A.Rotate(limit=3),
-                    A.GaussNoise(10.0),
-                    A.GaussianBlur(),
+                    RandomScale(),
+                    Rotate(limit=3),
+                    GaussNoise(10.0),
+                    GaussianBlur(),
                 ])
         else:
             transforms_ops = []
-            for op in transforms:
-                if op.lower() == "frequencymasking":
-                    transforms_ops.append(AudioTransform.FrequencyMasking(15))
-                elif op.lower() == "timemasking":
-                    transforms_ops.append(AudioTransform.TimeMasking(15))
-                elif op.lower() == "masking":
-                    transforms_ops.append(AudioTransform.FrequencyMasking(15))
-                    transforms_ops.append(AudioTransform.TimeMasking(15))
-            print("Transforms ops")
-        transforms_ops.append(T.Resize((512, 32)))
-        transforms_ops = T.Compose(transforms_ops)
+            # for op in transforms:
+                # if op.lower() == "frequencymasking":
+                    # transforms_ops.append(AudioTransform.FrequencyMasking(15))
+                # elif op.lower() == "timemasking":
+                    # transforms_ops.append(AudioTransform.TimeMasking(15))
+                # elif op.lower() == "masking":
+                    # transforms_ops.append(AudioTransform.FrequencyMasking(15))
+                    # transforms_ops.append(AudioTransform.TimeMasking(15))
+            print("Transforms ops", transforms_ops)
+            # transforms_ops.append(T.Resize((512, 32)))
+            # transforms_ops = T.Compose(transforms_ops)
+            transforms_ops = []
 
-        self.dataset      = RawAudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transform=transforms_ops)
-        self.val_dataset  = RawAudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transform=transforms_ops)
-        self.test_dataset = RawAudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transform=transforms_ops)
+        # self.dataset      = RawAudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transform=transforms_ops)
+        # self.val_dataset  = RawAudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
+        # self.test_dataset = RawAudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
+
+        self.dataset      = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transforms=transforms)
+        self.val_dataset  = AudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
+        self.test_dataset = AudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
+
 
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'], pin_memory=True, collate_fn=self._custom_collate)
