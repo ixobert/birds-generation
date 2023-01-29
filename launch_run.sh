@@ -8,8 +8,9 @@ if [ -z  "$COMMIT_MESSAGE" ] ; then
 fi
 
 #Commit current changes
-if  $CURRENT_BRANCH == "runs" ; then
-    echo "You are on runs branch, please checkout to another branch"
+#if branch is runs, Please commit to another branch, then exit this script
+if [ "$CURRENT_BRANCH" = "runs" ] ; then
+    echo "Please commit to another branch."
     exit 1
 fi
 
