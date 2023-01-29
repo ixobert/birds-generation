@@ -6,11 +6,13 @@ import natsort
 import uuid
 # import wavefile
 import librosa
+from copy import deepcopy
 import librosa.feature
 import torch
 from glob import glob
 import numpy as np
 import random
+random.seed(0)
 import cv2
 import sklearn.preprocessing
 import warnings
@@ -170,6 +172,13 @@ class AudioDataset():
         return ispecgram(specgram, n_fft=1024)
 
 
+    def  custom_augment(self, spec, transform):
+        augmented_spec = deepcopy(spec)
+
+
+
+        return 
+
     def load_audio(self,file_path, sr, window_length=0):
         audio, _sr = librosa.load(file_path, sr=sr)
         if _sr != self.sr:
@@ -184,20 +193,20 @@ class AudioDataset():
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
         try:
-            if audio is None:
-                if file_path.endswith('.npy'):
-                    features = np.load(file_path) 
-                else:
-                    audio = self.load_audio(file_path, self.sr, self.window_length)
+            # print(f"Audio is None: {audio is None}")
+            if file_path.endswith('.npy'):
+                features = np.load(file_path) 
+            else:
+                audio = self.load_audio(file_path, self.sr, self.window_length)
                 
-                    if self.spec:
-                        if self.use_spectrogram:
-                            features = self.audio_to_melspectrogram(audio, resize=self.resize)
-                        else:
-                            features = self.audio_to_specgram(audio, resize=self.resize)
-                        # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+                if self.spec:
+                    if self.use_spectrogram:
+                        features = self.audio_to_melspectrogram(audio, resize=self.resize)
                     else:
-                        features = audio
+                        features = self.audio_to_specgram(audio, resize=self.resize)
+                    # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+                else:
+                    features = audio
             
             features= np.expand_dims(features,0)
             if 'udem' in file_path:
@@ -217,12 +226,11 @@ class AudioDataset():
                 features = np.concatenate(3*[features]) #Single channel to 3 channel
 
             if self.transforms:
-                features = np.transpose(features, (1,2,0))
-                original_shape = features.shape
+                # features = np.transpose(features, (1,2,0))
+                # original_shape = features.shape
                 features = self.transforms(image=features)['image']
-                features = A.Resize(height=original_shape[0], width=original_shape[1])(image=features)['image']
-                features = np.transpose(features, (2,0,1))
-
+                # features = A.Resize(height=original_shape[0], width=original_shape[1])(image=features)['image']
+                # features = np.transpose(features, (2,0,1))
 
             # features = torchvision.transforms.ToTensor()(features)
             features = torch.tensor(features)
@@ -239,6 +247,7 @@ class AudioDataset():
                 # "label": label,
             }
         except Exception as e:
+            print(f"Error {e} on file: {file_path} -- {traceback.format_exc()}")
             logging.info(f"Error {e} on file: {file_path} -- {traceback.format_exc()}")
             if self.return_tuple_of3:
                 return None, None, None

@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 import torch
 import torchvision
+import numpy as np
+from functools import partial
 import albumentations as A
 from torchvision.transforms import transforms as T
 import torchaudio.transforms as AudioTransform
@@ -97,18 +99,46 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 # elif op.lower() == "masking":
                     # transforms_ops.append(AudioTransform.FrequencyMasking(15))
                     # transforms_ops.append(AudioTransform.TimeMasking(15))
+            transforms_ops = partial(self.custom_augment, transforms=transforms)
             print("Transforms ops", transforms_ops)
             # transforms_ops.append(T.Resize((512, 32)))
             # transforms_ops = T.Compose(transforms_ops)
-            transforms_ops = []
 
         # self.dataset      = RawAudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transform=transforms_ops)
         # self.val_dataset  = RawAudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
         # self.test_dataset = RawAudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
 
-        self.dataset      = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transforms=transforms)
+        self.dataset      = AudioDataset(data_path=self.config['train_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False), transforms=transforms_ops)
         self.val_dataset  = AudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
         self.test_dataset = AudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
+
+
+    def custom_augment(self, image, transforms):
+        for transform in transforms:
+            transform = transform.lower()
+            if "masking" in transform:
+                # print("Before", image.shape)
+                # remove a portion of max_size pixels at random position in the image along the frequency axis using numpy slicing
+                max_mask_size = 7
+                if transform == "frequency_masking":
+                    max_size = np.random.randint(0, max_mask_size)
+                    start = np.random.randint(0, image.shape[1] - max_size)
+                    image[:, start:start + max_size, :] = 0
+                elif transform == "time_masking":
+                    max_size = np.random.randint(0, max_mask_size)
+                    start = np.random.randint(0, image.shape[2] - max_size)
+                    image[:, :, start:start + max_size] = 0
+                elif transform == "masking":
+                    max_size = np.random.randint(0, max_mask_size)
+                    start = np.random.randint(0, image.shape[1] - max_size)
+                    image[:, start:start + max_size, :] = 0
+                    max_size = np.random.randint(0, max_mask_size)
+                    start = np.random.randint(0, image.shape[2] - max_size)
+                    image[:, :, start:start + max_size] = 0
+                # print("After", image.shape)
+
+        out = {"image":image}
+        return out 
 
 
     def train_dataloader(self):
