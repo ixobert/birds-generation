@@ -5,7 +5,12 @@ COMMIT_MESSAGE=$1
 
 
 #Commit current changes
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+#if branch is runs, Please commit to another branch, then exit this script
+if [ "$CURRENT_BRANCH" = "runs" ] ; then
+    echo "Please commit to another branch."
+    exit 1
+fi
+
 echo Current branch: $CURRENT_BRANCH
 echo Run message: $COMMIT_MESSAGE
 git commit -am "$COMMIT_MESSAGE"
