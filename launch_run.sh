@@ -2,10 +2,17 @@ set -e
 #Get current branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 COMMIT_MESSAGE=$1
-
+if [ -z  "$COMMIT_MESSAGE" ] ; then
+    echo "Please provide commit message"
+    exit 1
+fi
 
 #Commit current changes
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if  $CURRENT_BRANCH == "runs" ; then
+    echo "You are on runs branch, please checkout to another branch"
+    exit 1
+fi
+
 echo Current branch: $CURRENT_BRANCH
 echo Run message: $COMMIT_MESSAGE
 git commit -am "$COMMIT_MESSAGE"
