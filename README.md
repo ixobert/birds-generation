@@ -1,4 +1,3 @@
-# Birds-generation
+# ECOGEN: Bird Sounds Generation using Deep Learning
 
-## Installation steps
-Hello world !
+Instructions will be added soon
