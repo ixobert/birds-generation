@@ -1,7 +1,24 @@
-project_name: Test Project
+defaults:
+  - dataset: udem-birds 
+working_dir: '/home/future/Documents/runs_articfacts/birds-generation/outputs'
+hydra:
+  run:
+    dir: ${working_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+git_hash: ''
+project_name: birds-audio-generation
 run_name: Test run
-tags: ''
+tags: 
+  - 'debug'
 
-batch_size: 2
+
+num_workers: 4
+nb_epochs: 100000
+lr: 0.00002
+latent_loss_weight: 0.25
 net:
   in_channel: 1
+log_frequency: 10
+
+pretrained_weights: ''
+mode: train_extract #train | extract | train_extract By default: train
+debug: True

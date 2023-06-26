@@ -1,1 +1,3 @@
-/home/future/anaconda3/envs/audioGeneration/bin/python train-vqvae.py
+set -e 0
+echo $(pwd)
+cat tasks-train-classifier.txt | parallel -j 2  --delay 10 {} 

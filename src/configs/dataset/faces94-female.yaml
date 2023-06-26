@@ -1,0 +1,33 @@
+dataset:
+  num_workers: 2
+  train_path: '/home/future/Documents/Datasets/FacesDataset/Face_Recognition/faces94/female_train.txt'
+  root_dir:   '/home/future/Documents/Datasets/FacesDataset/Face_Recognition/faces94/female'
+  lmdb_path: ''
+
+  batch_size: 32
+  classes_name: 
+    - 'phughe'
+    - 'sbains'
+    - '9336923'
+    - 'klclar'
+    - 'astefa'
+    - 'slbirc'
+    - 'asewil'
+    - 'kaknig'
+    - 'yfhsie'
+    - 'asamma'
+    - 'vstros'
+    - 'lfso'
+    - 'drbost'
+    - 'ksunth'
+    - 'gotone'
+    - 'anpage'
+    - 'elduns'
+    - 'ekavaz'
+    - '9338535'
+    - 'mbutle'
+
+  resize: false
+  return_tuple: true
+  sr: 16384
+  use_mel: true

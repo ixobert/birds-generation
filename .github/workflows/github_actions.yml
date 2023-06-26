@@ -15,23 +15,26 @@ jobs:
   # This workflow contains a single job called "train"
   train:
     name: Training
+    # runs-on: [ubuntu-latest]
     runs-on: [self-hosted,gpu-0]
 #     strategy:
 #       matrix:
 #         python-version: [3.7]
-  
-
+    timeout-minutes: 4320
     steps:
+    - name: Set Permission
+      run: chown -R $USER:$USER /home/future/actions-runner/_work/birds-generation
+
     - name: Checkout Code
       uses: actions/checkout@v2
-      
-#     - name: Activate Conda Environment
-#       run: |
-#         conda init zsh
-#         conda activate audioGeneration         
-         
+
     - name: Install Dependencies
       run: sh setup.sh
-      
+
     - name: Execute trainings
       run: sh run.sh
+      # run: |
+        # cd ./src & sh ./run.sh &cd ..
+
+      
+        # /home/future/anaconda3/envs/scologan/bin/python train_vqvae.py

@@ -1,0 +1,19 @@
+dataset:
+  num_workers: 6
+  root_dir: '/media/future/Rapido/xeno-canto'
+  train_path: '${dataset.root_dir}/all-images.txt'
+  val_path: '${dataset.root_dir}/val-images.txt'
+  test_path: '${dataset.root_dir}/test-images.txt'
+  lmdb_path: ''
+
+  batch_size: 6
+  classes_name: 
+      - training_data
+      - spectrograms
+
+  resize: false
+  return_tuple: true
+  return_tuple_of3: true
+  sr: 22500
+  use_mel: true
+  use_cache: false

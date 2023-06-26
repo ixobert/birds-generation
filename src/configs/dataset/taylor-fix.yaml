@@ -1,0 +1,20 @@
+dataset:
+  num_workers: 6
+  train_path: '/media/future/Rapido/Taylor/train_list2.txt'
+  val_path: '/media/future/Rapido/Taylor/val_list2.txt'
+  test_path: '/media/future/Rapido/Taylor/test_list2.txt'
+  root_dir: '/media/future/Rapido/Taylor'
+  lmdb_path: ''
+
+  batch_size: 6
+  classes_name: 
+      - 'N_'
+      - 'NE_'
+      - 'CaVi_'
+      - 'BHGB_'
+
+  resize: false
+  return_tuple: true
+  return_tuple_of3: true
+  sr: 16384
+  use_mel: true

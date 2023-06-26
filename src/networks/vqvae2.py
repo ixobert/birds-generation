@@ -166,7 +166,7 @@ class VQVAE(nn.Module):
         decay=0.99,
     ):
         super().__init__()
-
+        self.n_embed = n_embed
         self.enc_b = Encoder(in_channel, channel, n_res_block, n_res_channel, stride=4)
         self.enc_t = Encoder(channel, channel, n_res_block, n_res_channel, stride=2)
         self.quantize_conv_t = nn.Conv2d(channel, embed_dim, 1)
@@ -188,11 +188,12 @@ class VQVAE(nn.Module):
             stride=4,
         )
 
-    def forward(self, input):
+    def forward(self, input, logits_only=False):
         quant_t, quant_b, diff, _, _ = self.encode(input)
         dec = self.decode(quant_t, quant_b)
-        dec = F.tanh(dec)
-
+        # dec = torch.tanh(dec)
+        if logits_only:
+            return dec
         return dec, diff
 
     def encode(self, input):

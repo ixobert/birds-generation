@@ -1,0 +1,36 @@
+defaults: 
+  - dataset: udem-birds
+working_dir: '/home/future/Documents/runs_articfacts/birds-generation/outputs'
+hydra:
+  run:
+    dir: ${working_dir}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+git_hash: ''
+project_name: birds-audio-generation
+run_name: Test run (Train Prior)
+tags: 
+  - 'debug'
+
+
+num_workers: 4
+nb_epochs: 1000
+lr: 0.00002
+net:
+  model_type: top
+  shape: [32, ] # Overrided in the code.
+  n_class: 512
+  channel: 256
+  kernel_size: 5
+  n_block: 4
+  n_res_block:  4
+  res_channel: 256
+  attention: False
+  dropout: 0.1
+  n_cond_res_block: 3
+  cond_res_channel: 256
+  cond_res_kernel: 3
+  n_out_res_block: 0
+  num_classes_labels: 0
+
+pretrained_weights: ''
+debug: True

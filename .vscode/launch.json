@@ -1,0 +1,96 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Train VQVAE-extract",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
+            "console": "integratedTerminal",
+            "args": ["working_dir=./outputs", "debug=True", "nb_epochs=1", "mode=extract", "dataset.resize=false", "pretrained_weights=/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36-udem-birds/models-vqvae-v0.ckpt"]
+
+        },
+        {
+            "name": "Train VQVAE",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_vqvae.py",
+            "console": "integratedTerminal",
+            "args": ["working_dir=./outputs", 
+                     "debug=True",
+                     "nb_epochs=10", 
+                     "dataset.batch_size=64", 
+                     "mode=train", 
+                     "dataset=xeno-canto",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/xeno-canto",
+                     "log_frequency=1",
+                     "dataset.use_cache=False",
+                     "dataset.num_workers=0"
+            ]
+        },
+
+        {
+            "name": "Train Prior",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_prior.py",
+            "console": "integratedTerminal",
+            "args": ["working_dir=./outputs",
+                     "debug=True",
+                     "nb_epochs=5",
+                     "dataset=faces94-female",
+                     "dataset.lmdb_path=/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-11-07/02-34-20/latents.lmdb",
+                     "net.model_type=top"
+            ]
+        },
+        {
+            "name": "Generate",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/generate.py",
+            "console": "integratedTerminal",
+            "args": ["--batch", "2",
+                     "--vqvae", "/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36-udem-birds/models-vqvae-v0.ckpt" ,
+                     "--top", "/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36-udem-birds/models-prior-top.ckpt",
+                     "--bottom", "/Users/test/Documents/Projects/Master/birds-generation/future_artifacts/2020-10-21/01-22-36-udem-birds/models-prior-bottom-v0.ckpt",
+                     "--temp", "1.0",
+                     "--filename", "debug-generated.png"
+            ]
+        },
+        {
+            "name": "Train Classifier",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/train_classifier.py",
+            "console": "integratedTerminal",
+            "args": [
+                    "--multirun",
+                    "working_dir=./outputs", 
+                     "debug=True",
+                     "nb_epochs=2", 
+                     "dataset=nips4bplus",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/nips4bplus",
+                     "dataset.return_tuple_of3=false",
+                     "backbone_network=resnet18,resnext50_32x4d,resnext101_32x8d,mobilenet_v2,densenet161",
+                     "log_frequency=1",
+                     "dataset.num_workers=0"
+            ]
+        },
+        {
+            "name": "Generate Samples",
+            "type": "python",
+            "request": "launch",
+            "program": "/Users/test/Documents/Projects/Master/birds-generation/src/generate_samples.py",
+            "console": "integratedTerminal",
+            "args": ["--model_path",
+                    "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
+                    "--augmentations",
+                    "interpolation"
+            ]
+        }
+
+    ]
+}
