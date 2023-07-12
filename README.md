@@ -56,7 +56,7 @@ You will need to update the content of `configs/dataset` to point your custom da
 #### Sample Generation
 The current version of ECOGEN supports 2 types of augmentation, interpolation and noise. The generate_samples script outputs the generated spectrograms in the `out_folder` folder as numpy files`.npy`.
 
-To generate th  e bird sounds, run the following command:
+To generate the bird songs spectrograms, run the following command:
 #### Noise augmentation
 ```
 python ./src/generate_samples.py  --data_paths="/folder_path/*.wav" --out_folder="./generated_samples"  --model_path="/path/to/model.ckpt"  --augmentations=noise --num_samples=3
