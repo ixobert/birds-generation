@@ -67,7 +67,7 @@ python ./src/generate_samples.py  --data_paths="/folder_path/*.wav" --out_folder
 ```
 
 You can view the generated spectrograms using the following commands:
-```
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 spec = np.load("generated_spectrogram.npy")
