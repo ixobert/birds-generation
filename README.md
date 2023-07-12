@@ -50,7 +50,7 @@ To train the ECOGEN model, run the following command:
 ```
 python ./src/train_vqvae.py  dataset="xeno-canto" mode="train" lr=0.00002 nb_epochs=25000 log_frequency=1 dataset.batch_size=420 dataset.num_workers=8 run_name="ECOGEN Training on Xeno Canto"  tags=[vq-vae2,xeno-canto] +gpus=[1] debug=false
 ```
-You will need to update the content of configs/dataset to point your custom dataset folder.
+You will need to update the content of `configs/dataset` to point your custom dataset folder.
 
 
 #### Sample Generation
@@ -58,9 +58,9 @@ The current version of ECOGEN supports 2 types of augmentation, interpolation an
 To generate th  e bird sounds, run the following command:
 #### Noise augmentation
 ```
-python ./src/generate.py  --ckpt <path_to_ckpt> --num_samples 100 --noise 0.1 --gpus 0
+python ./src/generate_samples.py  --data_paths="/folder_path/*.wav" --out_folder="./generated_samples"  --model_path="/path/to/model.ckpt"  --augmentations=noise --num_samples=3
 ```
 ### Interpolation augmentation
 ```
-python ./src/generate.py  --ckpt <path_to_ckpt> --num_samples 100 --noise 0.1 --gpus 0
+python ./src/generate_samples.py  --data_paths="/folder_path/*.wav" --out_folder="./generated_samples"  --model_path="/path/to/model.ckpt"  --augmentations=interpolation --num_samples=3
 ```
