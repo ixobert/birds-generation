@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from copy import deepcopy
 import os
 import random
@@ -5,7 +6,7 @@ import pytorch_lightning as pl
 import logging
 import os
 from scipy import rand
-
+from PIL import Image
 from torch._C import device
 os.environ['HYDRA_FULL_ERROR'] = '1'
 from argparse import Namespace
@@ -14,31 +15,32 @@ import hydra
 from omegaconf import DictConfig
 import argparse
 import glob
+import librosa
 try:
-    from train_vqvae import VQEngine
+    from networks.vqvae2 import VQVAE
 except ImportError:
-    from src.train_classifier import VQEngine
+    from src.networks.vqvae2 import VQVAE
+
 import tqdm
 import numpy as np
 
 parser = argparse.ArgumentParser(description="Data Augmentator")
-parser.add_argument('--model_path')
-# parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
-parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/splits_new/cleaned_train/*/*.npy", help="Spectrogram(2d numpy) path list.")
+parser.add_argument('--data_paths', type=str, default="", help="Audio paths list. (*.png, *.npy, *.wav)")
+parser.add_argument("--out_folder", type=str, help="Output folder for generated samples.")
 parser.add_argument('--augmentations', default="noise")
 parser.add_argument('--num_samples', type=int, default= 10)
 parser.add_argument('--device', default='cpu')
+parser.add_argument('--model_path', type=str, default="epoch=5-step=30005.ckpt")
 
 class Augmentations():
     all_methods = [
         'noise',
         'interpolation',
-        # 'extrapolation',
         ]
 
-    #Fix: Similar Generate samples are overwritten
+    def __init__(self,):
+        pass
 
-    @classmethod
     def encode(self, model, img, device='cuda:0'):
         img = img.to(device)
         quant_top, quant_bottom, diff, id_top, id_bottom = model.encode(img)
@@ -47,40 +49,67 @@ class Augmentations():
             id_top,
             id_bottom)
 
-    def load_sample(filepath):
-        spectrogram = np.load(filepath)
-        spectrogram = np.pad(spectrogram,[(0,0), (0,4)], mode='edge')
+    def load_audio(self, audio_path, sr=16384, seconds=4):
+        audio, _sr = librosa.load(audio_path)
+        audio = librosa.resample(audio, _sr, sr)
+        audio = librosa.util.fix_length(audio, seconds)
+        return audio
+
+    def load_sample_spectrogram(self, audio_path, window_length=16384*4, sr=16384, n_fft=1024):
+        audio = self.load_audio(audio_path, sr, window_length)
+        features = librosa.feature.melspectrogram(y=audio, n_fft=n_fft)
+        features = librosa.power_to_db(features)
+
+        if features.shape[0] % 2 != 0: 
+            features = features[1:, :]
+        if features.shape[1] % 2 != 0:
+            features = features[:, 1:]
+        return features
+
+
+    def load_sample(self, filepath):
+        print(filepath)
+        if filepath.endswith('.npy'):
+            spectrogram = np.load(filepath)
+            spectrogram = np.pad(spectrogram,[(0,0), (0,4)], mode='edge')
+        elif filepath.endswith('.png'):
+            spectrogram = np.array(Image.open(filepath))
+        elif filepath.endswith('.wav'):
+            spectrogram = self.load_sample_spectrogram(filepath)
+        else:
+            raise NotImplementedError(f"Filetype {filepath} not supported.")
+
         spectrogram = np.expand_dims(spectrogram, 0)
         spectrogram = np.expand_dims(spectrogram, 0)
+
+        print("Size:", spectrogram.shape)
         return spectrogram
 
 
-    @classmethod
     def decode(self, model, quant_top, quant_bottom):
         return model.decode(quant_top, quant_bottom).detach()
 
-    @classmethod
-    def noise(self, model, all_samples_paths, ratio=0.5, generation_count=10, device='cpu'):
+    def noise(self, model, all_samples_paths, ratio=0.5, out_folder="", generation_count=10, device='cpu'):
         all_samples_paths = [x for x in all_samples_paths if 'noise' not in os.path.basename(x)]
 
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
             for j in range(generation_count):
 
-                ratio = random.random() #Generate number in [0,1)
                 spectrogram = torch.tensor(self.load_sample(sample_path))
-                q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
+                q_t, q_b, i_t, i_b = self.encode(model, spectrogram, device=device)
                 new_q_t = ratio*torch.randn_like(q_t) + q_t
                 new_q_b = ratio*torch.randn_like(q_b) + q_b
-                reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                reconstructed = self.decode(model, new_q_t, new_q_b).cpu().numpy()[0][0]
                 reconstructed = reconstructed[:,:-4]
 
                 filename, ext = os.path.splitext(sample_path)
                 outfile = f"{filename}-{j}_noise{ratio:.2f}{ext}"
+                os.makedirs(out_folder, exist_ok=True)
+                outfile = os.path.join(out_folder, os.path.basename(outfile))
                 np.save(outfile, reconstructed)
 
 
-    @classmethod
-    def interpolation(self, model, all_samples_paths, ratio=0.5, generation_count=10, device='cpu'):
+    def interpolation(self, model, all_samples_paths, ratio=0.5, out_folder="", generation_count=10, device='cpu'):
         all_samples_paths = [x for x in all_samples_paths if 'interpolation' not in os.path.basename(x)]
 
         for i, sample_path in tqdm.tqdm(enumerate(all_samples_paths)):
@@ -141,17 +170,43 @@ class Augmentations():
     #                 outfile = f"{filename}-{k}_extrapolation{ratio}-{os.path.basename(sample_path1)}{ext}"
     #                 np.save(outfile, reconstructed)
 
+def update_model_keys(old_model:OrderedDict, key_to_replace:str='module.'):
+    new_model = OrderedDict()
+    for key,value in old_model.items():
+        if key.startswith(key):
+            new_model[key.replace(key_to_replace,'', 1)] = value
+        else:
+            new_model[key] = value
+    return new_model
+
+def load_model(model, model_path, device='cuda:0'):
+    weights = torch.load(model_path, map_location='cpu')
+    if 'model' in weights:
+        weights = weights['model']
+    if 'state_dict' in weights:
+        weights = weights['state_dict']
+    weights = update_model_keys(weights, key_to_replace='net.')
+    model.load_state_dict(weights)
+    model = model.eval()
+    # model = model.to(device)
+    return model
 
 def main() -> None:
     args = parser.parse_args()
-    model = VQEngine.load_from_checkpoint(args.model_path).to(args.device)
+    # model = VQEngine.load_from_checkpoint(args.model_path).to(args.device)
+    augmentations = Augmentations()
+    model = VQVAE(in_channel=1)
+    if args.model_path != "null":
+        model_vqvae = load_model(model, args.model_path, device=device)
+
     all_samples_paths = glob.glob(args.data_paths)
     aug_methods_names = args.augmentations.split(',')
     for aug_method_name in aug_methods_names:
         if aug_method_name not in Augmentations.all_methods:
             raise NotImplementedError
-        func = getattr(Augmentations, aug_method_name)
-        func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, generation_count=int(args.num_samples), device=args.device)
+
+        func = getattr(augmentations, aug_method_name)
+        func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, out_folder=args.out_folder, generation_count=int(args.num_samples), device=args.device)
     
 
 

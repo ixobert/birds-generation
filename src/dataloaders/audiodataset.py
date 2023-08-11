@@ -16,6 +16,7 @@ random.seed(0)
 import cv2
 import sklearn.preprocessing
 import warnings
+import torchaudio.transforms as T
 
 import torchvision
 import albumentations as A
@@ -66,13 +67,21 @@ class AudioDataset():
 
         #Only keep samples that have the class considered for the experiment.
         self.data = [ x for x in self.data if True in [class_ in x[0] for class_ in classes_name] ]
-        random.shuffle(self.data)
+        # random.shuffle(self.data)
             # self.data = random.sample(self.data, k=min(len(self.data),10))  # For debugging
         logging.info(f"Data initialization done {len(self.data)}")
         if len(self.data) < 1:
             logging.info("Empty dataset")
             raise ValueError
 
+        self.spectrogram_op = T.Spectrogram(
+                n_fft=1024,
+                win_length=1024,
+                hop_length=256,
+                center=True,
+                pad_mode="reflect",
+                power=2.0,
+            )
     def __len__(self):
         return len(self.data)
 
@@ -172,13 +181,6 @@ class AudioDataset():
         return ispecgram(specgram, n_fft=1024)
 
 
-    def  custom_augment(self, spec, transform):
-        augmented_spec = deepcopy(spec)
-
-
-
-        return 
-
     def load_audio(self,file_path, sr, window_length=0):
         audio, _sr = librosa.load(file_path, sr=sr)
         if _sr != self.sr:
@@ -190,6 +192,21 @@ class AudioDataset():
             audio = librosa.util.fix_length(audio, self.window_length)
         return audio
 
+
+    def _get_sample(self,   path, resample=None):
+        import torchaudio
+        effects = [["remix", "1"]]
+        if resample:
+            effects.extend(
+                [
+                    ["lowpass", f"{resample // 2}"],
+                    ["rate", f"{resample}"],
+                ]
+            )
+        return torchaudio.sox_effects.apply_effects_file(path, effects=effects)
+
+        
+
     def __getitem__(self, idx):
         file_path, audio = self.data[idx]
         try:
@@ -197,18 +214,31 @@ class AudioDataset():
             if file_path.endswith('.npy'):
                 features = np.load(file_path) 
             else:
-                audio = self.load_audio(file_path, self.sr, self.window_length)
-                
+                # audio = self.load_audio(file_path, self.sr, self.window_length)
+                waveform = self._get_sample(file_path, resample=self.sr)[0]
                 if self.spec:
-                    if self.use_spectrogram:
-                        features = self.audio_to_melspectrogram(audio, resize=self.resize)
-                    else:
-                        features = self.audio_to_specgram(audio, resize=self.resize)
+                    pass
+              
+                    features= self.spectrogram_op(waveform)
+                    
+                    # if self.use_spectrogram:
+                    #     features = self.audio_to_melspectrogram(audio, resize=self.resize)
+                    # else:
+                    #     features = self.audio_to_specgram(audio, resize=self.resize)
                     # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+                    if self.use_rgb:
+                        features = torch.concatenate(3*[features]) #Single channel to 3 channel
+
+                    # print(features.shape)
                 else:
                     features = audio
+                    features= np.expand_dims(features,0)
+                
+                
+                
             
-            features= np.expand_dims(features,0)
+            # features= np.expand_dims(features,0)
+
             if 'udem' in file_path:
                 label_name = file_path.split('/')[-2]
             # elif 'nsynth' in file_path:
@@ -220,20 +250,16 @@ class AudioDataset():
             label = self.classes_name.index(label_name)
             one_hot_label = np.zeros(len(self.classes_name))
             one_hot_label[label] = 1
-            # print(one_hot_label, label, label_name)
 
-            if self.use_rgb:
-                features = np.concatenate(3*[features]) #Single channel to 3 channel
 
             if self.transforms:
-                # features = np.transpose(features, (1,2,0))
-                # original_shape = features.shape
-                features = self.transforms(image=features)['image']
-                # features = A.Resize(height=original_shape[0], width=original_shape[1])(image=features)['image']
-                # features = np.transpose(features, (2,0,1))
+                # print("Augmenting", self.transforms)
+                features = self.transforms(input=features)['image']
+            features = torchvision.transforms.Resize(size=(512,64))(features)
+            features = features.float()
 
-            # features = torchvision.transforms.ToTensor()(features)
-            features = torch.tensor(features)
+
+            # features = torch.tensor(features)
             label = torch.tensor(label)
             if self.return_tuple:
                 if self.return_tuple_of3:

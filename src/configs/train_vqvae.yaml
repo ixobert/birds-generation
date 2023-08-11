@@ -20,5 +20,5 @@ net:
 log_frequency: 10
 
 pretrained_weights: ''
-mode: train_extract #train | extract | train_extract By default: train
+mode: train #train | extract | train_extract By default: train
 debug: True
