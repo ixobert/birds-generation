@@ -72,11 +72,14 @@
                      "debug=True",
                      "nb_epochs=2", 
                      "dataset=nips4bplus",
-                     "dataset.root_dir=/Users/test/Documents/Projects/Master/nips4bplus",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/birds-generation/data",
                      "dataset.return_tuple_of3=false",
-                     "backbone_network=resnet18,resnext50_32x4d,resnext101_32x8d,mobilenet_v2,densenet161",
+                     "backbone_network=resnet50",
                      "log_frequency=1",
-                     "dataset.num_workers=0"
+                     "dataset.augmentation_mode=[\"masking\",\"input_dropout\",\"spec_stretching\"]",
+                     "dataset.num_workers=0",
+                     "+gpus=[\"cpu\"]"
+            
             ]
         },
         {

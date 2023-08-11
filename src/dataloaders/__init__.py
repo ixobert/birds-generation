@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from albumentations import RandomScale, Rotate, GaussNoise, GaussianBlur
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
@@ -7,7 +8,7 @@ import torchvision
 import numpy as np
 from functools import partial
 import albumentations as A
-from torchvision.transforms import transforms as T
+import torchvision.transforms as VisionTransforms
 import torchaudio.transforms as AudioTransform
 try:
     from imagedataset import ImageDataset
@@ -33,7 +34,17 @@ class CodeBookDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.config['num_workers'])
 
-
+class AddGaussianNoise(object):
+    def __init__(self, mean=0., std=1.):
+        self.std = std
+        self.mean = mean
+        
+    def __call__(self, tensor):
+        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+    
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+        
 class ImagesDataModule(pl.LightningDataModule):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -81,7 +92,6 @@ class SpectrogramsDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         transforms = self.config.get('augmentation_mode',[])
         print("Transforms function", transforms)
-        transforms_ops = []
         if 'image_base' in transforms:
             transforms_ops = A.Compose([
                     RandomScale(),
@@ -90,16 +100,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                     GaussianBlur(),
                 ])
         else:
-            transforms_ops = []
-            # for op in transforms:
-                # if op.lower() == "frequencymasking":
-                    # transforms_ops.append(AudioTransform.FrequencyMasking(15))
-                # elif op.lower() == "timemasking":
-                    # transforms_ops.append(AudioTransform.TimeMasking(15))
-                # elif op.lower() == "masking":
-                    # transforms_ops.append(AudioTransform.FrequencyMasking(15))
-                    # transforms_ops.append(AudioTransform.TimeMasking(15))
-            transforms_ops = partial(self.custom_augment, transforms=transforms)
+            transforms_ops = partial(self.custom_augment_torchaudio, transforms=transforms)
             print("Transforms ops", transforms_ops)
             # transforms_ops.append(T.Resize((512, 32)))
             # transforms_ops = T.Compose(transforms_ops)
@@ -113,7 +114,33 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.test_dataset = AudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
 
 
-    def custom_augment(self, image, transforms):
+    def custom_augment_torchaudio(self, input, transforms):
+        image = deepcopy(input)
+        ops = []
+        for transform in transforms:
+            transform = transform.lower()
+            if "masking" in transform:
+                max_mask_size = 7
+                ops.append(AudioTransform.FrequencyMasking(freq_mask_param=max_mask_size))
+                ops.append(AudioTransform.TimeMasking(time_mask_param=max_mask_size))
+
+            elif transform == "input_dropout":
+                ops.append(torchvision.transforms.RandomErasing(p=0.5, scale=(0.1, 0.1), ratio=(1, 1), value=0, inplace=False))
+            elif transform == "input_noise":
+                ops.append(AddGaussianNoise(0.1, 0.5))
+            elif transform == "spec_stretching":
+                ops.append(AudioTransform.TimeStretch(n_freq=513, fixed_rate=0.5))
+
+        out = {"image": VisionTransforms.Compose(ops)(image)}
+        return out
+
+
+    def custom_augment(self, input, transforms):
+        image = deepcopy(input)
+        if isinstance(transforms, torch.nn.Sequential):
+            out = {"image": transforms(image)}
+            return out
+        
         for transform in transforms:
             transform = transform.lower()
             if "masking" in transform:
@@ -135,7 +162,14 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                     max_size = np.random.randint(0, max_mask_size)
                     start = np.random.randint(0, image.shape[2] - max_size)
                     image[:, :, start:start + max_size] = 0
-                # print("After", image.shape)
+
+            elif "input_noise" == transform:
+                image += np.random.normal(0, 0.1, image.shape)
+            elif "input_dropout" == transform:
+                image  = np.where(np.random.random(image.shape) < 0.1, 0, image)
+            elif "spec_stretching" == transform:
+                image = None 
+
 
         out = {"image":image}
         return out 
