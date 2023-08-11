@@ -25,7 +25,6 @@ import tqdm
 import numpy as np
 
 parser = argparse.ArgumentParser(description="Data Augmentator")
-# parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
 parser.add_argument('--data_paths', type=str, default="", help="Audio paths list. (*.png, *.npy, *.wav)")
 parser.add_argument("--out_folder", type=str, help="Output folder for generated samples.")
 parser.add_argument('--augmentations', default="noise")

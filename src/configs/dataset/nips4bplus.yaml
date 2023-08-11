@@ -31,6 +31,9 @@ dataset:
     # - freqMasking
     # - mixup
     # - image_base
+    # - input_noise
+    # - input_dropout
+    # - spec_stretching
 
   resize: false
   return_tuple: true
