@@ -228,14 +228,14 @@ class AudioDataset():
                     # else:
                     #     features = self.audio_to_specgram(audio, resize=self.resize)
                     # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
-                    if self.use_rgb:
-                        features = torch.concatenate(3*[features]) #Single channel to 3 channel
 
                     # print(features.shape)
                 else:
                     features = audio
                     features= np.expand_dims(features,0)
             
+            if self.use_rgb:
+                features = torch.concatenate(3*[features]) #Single channel to 3 channel
             # features= np.expand_dims(features,0)
 
             if 'udem' in file_path:
