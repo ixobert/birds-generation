@@ -82,7 +82,6 @@ class Augmentations():
 
 
     def load_sample(self, filepath):
-        print(filepath)
         if filepath.endswith('.npy'):
             spectrogram = np.load(filepath)
             spectrogram = np.pad(spectrogram,[(0,0), (0,4)], mode='edge')
@@ -96,7 +95,6 @@ class Augmentations():
         spectrogram = np.expand_dims(spectrogram, 0)
         spectrogram = np.expand_dims(spectrogram, 0)
 
-        print("Size:", spectrogram.shape)
         return spectrogram
 
 
@@ -170,16 +168,22 @@ class Augmentations():
                     spectrogram = torch.tensor(self.load_sample(sample_path))
                     spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-                    q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-                    q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+                    q_t, q_b, i_t, i_b = self.encode(model, spectrogram, device=device)
+                    q_t1, q_b1, i_t1, i_b1 = self.encode(model, spectrogram1, device=device)
                     new_q_t = (q_t1 - q_t)*ratio + q_t
                     new_q_b = (q_b1 - q_b)*ratio + q_b
 
-                    reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                    reconstructed = self.decode(model, new_q_t, new_q_b).cpu().numpy()[0][0]
                     reconstructed = reconstructed[:,:-4]
 
+                    # filename, ext = os.path.splitext(sample_path)
+                    # np.save(outfile, reconstructed)
+
                     filename, ext = os.path.splitext(sample_path)
-                    outfile = f"{filename}-{k}_interpolation{ratio:.2f}-{os.path.basename(sample_path1)}{ext}"
+                    current_file_folder = os.path.basename(os.path.dirname(sample_path))
+                    outfile = f"{os.path.basename(filename)[0:15]}-{k}_interpolation{ratio:.3f}-{os.path.basename(sample_path1)[0:15]}{ext}"
+                    outfile = os.path.join(out_folder, current_file_folder, outfile)
+                    os.makedirs(os.path.dirname(outfile), exist_ok=True)
                     np.save(outfile, reconstructed)
                     count += 1
 
