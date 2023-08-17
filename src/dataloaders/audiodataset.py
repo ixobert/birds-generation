@@ -69,7 +69,7 @@ class AudioDataset():
         #Only keep samples that have the class considered for the experiment.
         self.data = [ x for x in self.data if True in [class_ in x[0] for class_ in classes_name] ]
         random.shuffle(self.data)
-            # self.data = random.sample(self.data, k=min(len(self.data),10))  # For debugging
+        self.data = random.sample(self.data, k=min(len(self.data),708))  # For debugging
         logging.info(f"Data initialization done {len(self.data)}")
         if len(self.data) < 1:
             logging.info("Empty dataset")
