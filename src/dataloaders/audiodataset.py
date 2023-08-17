@@ -214,14 +214,12 @@ class AudioDataset():
             # print(f"Audio is None: {audio is None}")
             if file_path.endswith('.npy'):
                 features = np.load(file_path) 
+                features= np.expand_dims(features,0)
                 features = torch.tensor(features)
             else:
                 # audio = self.load_audio(file_path, self.sr, self.window_length)
                 waveform = self._get_sample(file_path, resample=self.sr)[0]
                 if self.spec:
-                    if "input_noise":
-                        if random.random() < 0.5:
-                            waveform = waveform + torch.randn_like(waveform) * 1e-4
                     features= self.spectrogram_op(waveform)
                     # if self.use_spectrogram:
                     #     features = self.audio_to_melspectrogram(audio, resize=self.resize)
