@@ -1,0 +1,33 @@
+dataset:
+  num_workers: 6
+  root_dir: '/media/future/Rapido/NIPS4B_BIRD_CHALLENGE_TRAIN_TEST_WAV/ArticBirdSounds/'
+  train_path: '${dataset.root_dir}/cleaned_train.txt'
+  val_path: '${dataset.root_dir}/cleaned_test.txt'
+  test_path: '${dataset.root_dir}/cleaned_test.txt'
+  lmdb_path: ''
+
+  batch_size: 32
+  classes_name: 
+    - AGMP
+    - Goose
+    - Gull
+    - LALO
+    - REPH
+
+  augmentation_mode:
+    # - masking
+    # - timeMasking
+    # - freqMasking
+    # - mixup
+    # - image_base
+    # - input_noise
+    # - input_dropout
+    # - spec_stretching
+
+  resize: false
+  return_tuple: true
+  return_tuple_of3: true
+  sr: 22050
+  use_mel: true
+  use_cache: false
+  use_rgb: true
