@@ -40,7 +40,7 @@ class AddGaussianNoise(object):
         self.mean = mean
         
     def __call__(self, tensor):
-        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+        return tensor + (torch.randn(tensor.size()) * self.std + self.mean) * 1.e-3
     
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
@@ -113,13 +113,13 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         self.val_dataset  = AudioDataset(data_path=self.config['val_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
         self.test_dataset = AudioDataset(data_path=self.config['test_path'], root_dir=self.config['root_dir'], classes_name=self.config['classes_name'], sr=self.config['sr'], window_length=self.config['sr']*4, spec=self.config['use_mel'], resize=self.config['resize'], return_tuple=self.config['return_tuple'], return_tuple_of3=self.config.get('return_tuple_of3', True), use_spectrogram=self.config.get('use_mel', False), use_cache=self.config.get('use_cache', True), use_rgb=self.config.get('use_rgb', False))
 
-
+    @classmethod
     def custom_augment_torchaudio(self, input, transforms):
         image = deepcopy(input)
         ops = []
         for transform in transforms:
             transform = transform.lower()
-            if "masking" in transform:
+            if "masking" in transform or "specaug" == transform:
                 max_mask_size = 7
                 ops.append(AudioTransform.FrequencyMasking(freq_mask_param=max_mask_size))
                 ops.append(AudioTransform.TimeMasking(time_mask_param=max_mask_size))
@@ -128,8 +128,10 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 ops.append(torchvision.transforms.RandomErasing(p=0.5, scale=(0.1, 0.1), ratio=(1, 1), value=0, inplace=False))
             elif transform == "input_noise":
                 ops.append(AddGaussianNoise(0.1, 0.5))
-            elif transform == "spec_stretching":
-                ops.append(AudioTransform.TimeStretch(n_freq=513, fixed_rate=0.5))
+            elif transform == "input_stretching":
+                ops.append(AudioTransform.TimeStretch(n_freq=128, fixed_rate=0.5))
+            else:
+                raise NotImplementedError
 
         out = {"image": VisionTransforms.Compose(ops)(image)}
         return out

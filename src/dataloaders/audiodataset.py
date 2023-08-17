@@ -10,6 +10,7 @@ from copy import deepcopy
 import librosa.feature
 import torch
 from glob import glob
+import torchaudio
 import numpy as np
 import random
 random.seed(0)
@@ -74,16 +75,17 @@ class AudioDataset():
             logging.info("Empty dataset")
             raise ValueError
 
-        self.spectrogram_op = T.Spectrogram(
-                n_fft=1024,
-                win_length=1024,
-                hop_length=256,
-                center=True,
-                pad_mode="reflect",
-                power=2.0,
-            )
+        self.spectrogram_op = self._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
+
     def __len__(self):
         return len(self.data)
+
+    @classmethod
+    def _get_spectrogram_operation(self, *args, **kwargs):
+        return T.MelSpectrogram(
+            *args,
+            **kwargs,
+            )
 
     @classmethod
     def get_cached_dataset(cls, files_path:str, cache_folder:str ='/tmp/cached_dataset') -> list:
@@ -192,14 +194,13 @@ class AudioDataset():
             audio = librosa.util.fix_length(audio, self.window_length)
         return audio
 
-
-    def _get_sample(self,   path, resample=None):
-        import torchaudio
+    @classmethod
+    def _get_sample(self, path, resample=22050):
         effects = [["remix", "1"]]
         if resample:
             effects.extend(
                 [
-                    ["lowpass", f"{resample // 2}"],
+                    # ["lowpass", f"{resample // }"],
                     ["rate", f"{resample}"],
                 ]
             )
@@ -217,10 +218,10 @@ class AudioDataset():
                 # audio = self.load_audio(file_path, self.sr, self.window_length)
                 waveform = self._get_sample(file_path, resample=self.sr)[0]
                 if self.spec:
-                    pass
-              
+                    if "input_noise":
+                        if random.random() < 0.5:
+                            waveform = waveform + torch.randn_like(waveform) * 1e-4
                     features= self.spectrogram_op(waveform)
-                    
                     # if self.use_spectrogram:
                     #     features = self.audio_to_melspectrogram(audio, resize=self.resize)
                     # else:
@@ -233,9 +234,6 @@ class AudioDataset():
                 else:
                     features = audio
                     features= np.expand_dims(features,0)
-                
-                
-                
             
             # features= np.expand_dims(features,0)
 
@@ -247,10 +245,13 @@ class AudioDataset():
                 label_name = os.path.basename(file_path).split('-')[1]
             else:
                 label_name = file_path.split('/')[-2]
-            label = self.classes_name.index(label_name)
-            one_hot_label = np.zeros(len(self.classes_name))
-            one_hot_label[label] = 1
-
+            if self.classes_name:
+                label = self.classes_name.index(label_name)
+                one_hot_label = np.zeros(len(self.classes_name))
+                one_hot_label[label] = 1
+            else:
+                label = -1
+                one_hot_label = np.zeros(1)
 
             if self.transforms:
                 # print("Augmenting", self.transforms)
