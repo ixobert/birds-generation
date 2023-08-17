@@ -214,6 +214,7 @@ class AudioDataset():
             # print(f"Audio is None: {audio is None}")
             if file_path.endswith('.npy'):
                 features = np.load(file_path) 
+                features = torch.tensor(features)
             else:
                 # audio = self.load_audio(file_path, self.sr, self.window_length)
                 waveform = self._get_sample(file_path, resample=self.sr)[0]
