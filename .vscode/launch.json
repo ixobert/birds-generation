@@ -76,7 +76,7 @@
                      "dataset.return_tuple_of3=false",
                      "backbone_network=resnet50",
                      "log_frequency=1",
-                     "dataset.augmentation_mode=[\"masking\",\"input_dropout\",\"spec_stretching\"]",
+                     "dataset.augmentation_mode=[\"masking\",\"input_dropout\",\"input_stretching\"]",
                      "dataset.num_workers=0",
                      "+gpus=[\"cpu\"]"
             
@@ -88,10 +88,12 @@
             "request": "launch",
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/generate_samples.py",
             "console": "integratedTerminal",
-            "args": ["--model_path",
-                    "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
-                    "--augmentations",
-                    "interpolation"
+            "args": [
+                    "--data_paths", "/Users/test/Documents/Projects/Master/nips4bplus/splits_new/cleaned_train/*/*.wav",
+                    "--model_path", "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
+                    "--out_folder", "/Users/test/Documents/Projects/Master/birds-generation/dummy_generation/specaug",
+                    "--augmentations", "specaug",
+                    "--num_samples", "4",
             ]
         }
 

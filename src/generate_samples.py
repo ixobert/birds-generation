@@ -18,24 +18,38 @@ import glob
 import librosa
 try:
     from networks.vqvae2 import VQVAE
+    from dataloaders import SpectrogramsDataModule
+    from dataloaders.audiodataset import AudioDataset
 except ImportError:
     from src.networks.vqvae2 import VQVAE
+    from src.dataloaders import SpectrogramsDataModule
+    from src.dataloaders.audiodataset import AudioDataset
 
 import tqdm
 import numpy as np
+
 
 parser = argparse.ArgumentParser(description="Data Augmentator")
 parser.add_argument('--data_paths', type=str, default="", help="Audio paths list. (*.png, *.npy, *.wav)")
 parser.add_argument("--out_folder", type=str, help="Output folder for generated samples.")
 parser.add_argument('--augmentations', default="noise")
-parser.add_argument('--num_samples', type=int, default= 10)
+parser.add_argument('--num_samples', type=int, default= 3)
 parser.add_argument('--device', default='cpu')
 parser.add_argument('--model_path', type=str, default="epoch=5-step=30005.ckpt")
 
+
 class Augmentations():
-    all_methods = [
+    ecogen_augs = [
         'noise',
         'interpolation',
+    ]
+
+    specbase_augs = [
+        'input_dropout',
+        'input_noise',
+        'input_stretching',
+        'specaug', #specaug,
+        'mixup',
         ]
 
     def __init__(self,):
@@ -88,6 +102,33 @@ class Augmentations():
 
     def decode(self, model, quant_top, quant_bottom):
         return model.decode(quant_top, quant_bottom).detach()
+
+
+    def specbase_augment(self, all_samples_paths, ratio=0.1, out_folder="", generation_count=5, transform='input_dropout', device='cpu'):
+
+        for i, file_path in tqdm.tqdm(enumerate(all_samples_paths)):
+            waveform, sr = AudioDataset._get_sample(path=file_path)
+            spectrogram_op = AudioDataset._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
+
+            spectrogram = spectrogram_op(waveform)
+            temp_spec = deepcopy(spectrogram)
+            for j in range(generation_count):
+                if  transform ==' input_noise':
+                    temp_waveform = deepcopy(waveform) + ratio*torch.randn_like(waveform)
+                    temp_spec = spectrogram_op(temp_waveform)
+                    reconstructed = SpectrogramsDataModule.custom_augment_torchaudio(temp_spec, transforms=[])['image']
+                else:
+                    reconstructed = SpectrogramsDataModule.custom_augment_torchaudio(temp_spec, transforms=[transform])['image']
+                
+                reconstructed = reconstructed.float()
+                reconstructed = reconstructed.numpy()[0]
+
+                filename, ext = os.path.splitext(file_path)
+                current_file_folder = os.path.basename(os.path.dirname(file_path))
+                outfile = f"{os.path.basename(filename)}-{j}_{transform}{ratio:.2f}{ext}"
+                outfile = os.path.join(out_folder, current_file_folder, outfile)
+                os.makedirs(os.path.dirname(outfile), exist_ok=True)
+                np.save(outfile, reconstructed)
 
     def noise(self, model, all_samples_paths, ratio=0.5, out_folder="", generation_count=10, device='cpu'):
         all_samples_paths = [x for x in all_samples_paths if 'noise' not in os.path.basename(x)]
@@ -201,12 +242,15 @@ def main() -> None:
 
     all_samples_paths = glob.glob(args.data_paths)
     aug_methods_names = args.augmentations.split(',')
-    for aug_method_name in aug_methods_names:
-        if aug_method_name not in Augmentations.all_methods:
-            raise NotImplementedError
+    for aug_method_name in aug_methods_names :
+        if aug_method_name in Augmentations.specbase_augs:
+            augmentations.specbase_augment(all_samples_paths=all_samples_paths, ratio=0.1, out_folder=args.out_folder, generation_count=int(args.num_samples), transform=aug_method_name, device=args.device, )
 
-        func = getattr(augmentations, aug_method_name)
-        func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, out_folder=args.out_folder, generation_count=int(args.num_samples), device=args.device)
+        elif aug_method_name in Augmentations.ecogen_augs:
+            func = getattr(augmentations, aug_method_name)
+            func(model=model, all_samples_paths=all_samples_paths, ratio=0.5, out_folder=args.out_folder, generation_count=int(args.num_samples), device=args.device, )
+        else:
+            raise NotImplementedError
     
 
 
