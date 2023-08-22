@@ -71,12 +71,12 @@
                     "working_dir=./outputs", 
                      "debug=True",
                      "nb_epochs=2", 
-                     "dataset=nips4bplus",
-                     "dataset.root_dir=/Users/test/Documents/Projects/Master/birds-generation/data",
+                     "dataset=articbirdsounds",
+                     "dataset.root_dir=/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/",
                      "dataset.return_tuple_of3=false",
                      "backbone_network=resnet50",
                      "log_frequency=1",
-                     "dataset.augmentation_mode=[\"masking\",\"input_dropout\",\"input_stretching\"]",
+                     "dataset.augmentation_mode=[]",
                      "dataset.num_workers=0",
                      "+gpus=[\"cpu\"]"
             
