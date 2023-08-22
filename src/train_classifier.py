@@ -313,6 +313,7 @@ def main(cfg: DictConfig) -> None:
         preds=predictions,
         class_names=class_names)})
 
+    print("Classes in GT:", np.unique(targets), "Classes in predictions:", np.unique(predictions))
     cls_report = classification_report(
         targets, predictions, target_names=class_names, output_dict=True)
     test_log_metrics = {}
