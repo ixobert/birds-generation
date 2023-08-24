@@ -141,10 +141,17 @@ class Augmentations():
                 reconstructed = self.decode(model, new_q_t, new_q_b).cpu().numpy()[0][0]
                 reconstructed = reconstructed[:,:-4]
 
+                # filename, ext = os.path.splitext(sample_path)
+                # outfile = f"{filename}-{j}_noise{ratio:.2f}{ext}"
+                # os.makedirs(out_folder, exist_ok=True)
+                # outfile = os.path.join(out_folder, os.path.basename(outfile))
+                # np.save(outfile, reconstructed)
+
                 filename, ext = os.path.splitext(sample_path)
-                outfile = f"{filename}-{j}_noise{ratio:.2f}{ext}"
-                os.makedirs(out_folder, exist_ok=True)
-                outfile = os.path.join(out_folder, os.path.basename(outfile))
+                current_file_folder = os.path.basename(os.path.dirname(sample_path))
+                outfile = f"{os.path.basename(filename)[0:15]}-{j}_noise{ratio:.3f}{ext}"
+                outfile = os.path.join(out_folder, current_file_folder, outfile)
+                os.makedirs(os.path.dirname(outfile), exist_ok=True)
                 np.save(outfile, reconstructed)
 
 
