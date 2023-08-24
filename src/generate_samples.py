@@ -149,7 +149,7 @@ class Augmentations():
 
                 filename, ext = os.path.splitext(sample_path)
                 current_file_folder = os.path.basename(os.path.dirname(sample_path))
-                outfile = f"{os.path.basename(filename)[0:15]}-{j}_noise{ratio:.3f}{ext}"
+                outfile = f"{os.path.basename(filename)[0:15]}-{i}-{j}_noise{ratio:.3f}{ext}"
                 outfile = os.path.join(out_folder, current_file_folder, outfile)
                 os.makedirs(os.path.dirname(outfile), exist_ok=True)
                 np.save(outfile, reconstructed)
