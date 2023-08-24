@@ -210,7 +210,6 @@ def main(cfg: DictConfig) -> None:
 
     datamodule = SpectrogramsDataModule(config=cfg['dataset'])
     datamodule.setup()
-
     # Implement custom training loop and apply mixup aug.
     best_loss_f1 = [1e9, 0, 0]  # loss, f1-score, best_epoch_id
     for epoch in tqdm(range(cfg['nb_epochs'])):
