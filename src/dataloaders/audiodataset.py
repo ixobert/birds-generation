@@ -75,7 +75,7 @@ class AudioDataset():
             logging.info("Empty dataset")
             raise ValueError
 
-        self.spectrogram_op = self._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
+        self.spectrogram_op = self._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=1.0)
 
     def __len__(self):
         return len(self.data)
