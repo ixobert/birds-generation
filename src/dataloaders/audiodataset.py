@@ -258,7 +258,7 @@ class AudioDataset():
             if self.transforms:
                 # print("Augmenting", self.transforms)
                 features = self.transforms(input=features)['image']
-            # features = torchvision.transforms.Resize(size=(512,64))(features)
+            features = torchvision.transforms.Resize(size=(512,64))(features)
             features = features.float()
 
 
