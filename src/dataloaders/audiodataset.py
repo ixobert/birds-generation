@@ -75,7 +75,7 @@ class AudioDataset():
             logging.info("Empty dataset")
             raise ValueError
 
-        self.spectrogram_op = self._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=1.0)
+        self.spectrogram_op = self._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
 
     def __len__(self):
         return len(self.data)
@@ -217,20 +217,23 @@ class AudioDataset():
                 features= np.expand_dims(features,0)
                 features = torch.tensor(features)
             else:
-                # audio = self.load_audio(file_path, self.sr, self.window_length)
-                waveform = self._get_sample(file_path, resample=self.sr)[0]
+                audio = self.load_audio(file_path, self.sr, self.window_length)
+                # waveform = self._get_sample(file_path, resample=self.sr)[0]
                 if self.spec:
-                    features= self.spectrogram_op(waveform)
-                    # if self.use_spectrogram:
-                    #     features = self.audio_to_melspectrogram(audio, resize=self.resize)
-                    # else:
-                    #     features = self.audio_to_specgram(audio, resize=self.resize)
+                    # features= self.spectrogram_op(waveform)
+                    if self.use_spectrogram:
+                        features = self.audio_to_melspectrogram(audio, resize=self.resize)
+                    else:
+                        features = self.audio_to_specgram(audio, resize=self.resize)
                     # features = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1)).fit_transform(features)
+                    features = np.expand_dims(features,0)
+                    features = torch.tensor(features)
 
                     # print(features.shape)
                 else:
                     features = audio
                     features= np.expand_dims(features,0)
+                    features = torch.tensor(features)
             
             if self.use_rgb:
                 features = torch.concatenate(3*[features]) #Single channel to 3 channel
@@ -255,7 +258,7 @@ class AudioDataset():
             if self.transforms:
                 # print("Augmenting", self.transforms)
                 features = self.transforms(input=features)['image']
-            features = torchvision.transforms.Resize(size=(512,64))(features)
+            # features = torchvision.transforms.Resize(size=(512,64))(features)
             features = features.float()
 
 
