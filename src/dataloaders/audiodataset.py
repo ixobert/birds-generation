@@ -182,16 +182,16 @@ class AudioDataset():
         #     specgram= np.pad(specgram, ((0,0),(0,1),(0,0)))
         return ispecgram(specgram, n_fft=1024)
 
-
+    @classmethod
     def load_audio(self,file_path, sr, window_length=0):
         audio, _sr = librosa.load(file_path, sr=sr)
-        if _sr != self.sr:
+        if _sr != sr:
             audio = librosa.resample(audio, _sr, sr)
 
-        if self.window_length and len(audio) >= self.window_length:
-            audio = audio[0:self.window_length]
+        if window_length and len(audio) >= window_length:
+            audio = audio[0:window_length]
         else:
-            audio = librosa.util.fix_length(audio, self.window_length)
+            audio = librosa.util.fix_length(audio, window_length)
         return audio
 
     @classmethod

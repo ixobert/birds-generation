@@ -47,7 +47,7 @@ class Augmentations():
     specbase_augs = [
         'input_dropout',
         'input_noise',
-        'input_stretching',
+        'spec_stretching',
         'specaug', #specaug,
         'mixup',
         ]
@@ -105,19 +105,24 @@ class Augmentations():
     def specbase_augment(self, all_samples_paths, ratio=0.1, out_folder="", generation_count=5, transform='input_dropout', device='cpu'):
 
         for i, file_path in tqdm.tqdm(enumerate(all_samples_paths)):
-            waveform, sr = AudioDataset._get_sample(path=file_path)
-            spectrogram_op = AudioDataset._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
+            waveform = AudioDataset.load_audio(file_path, sr=22050, window_length=22050*4)
+            # waveform, sr = AudioDataset._get_sample(path=file_path)
+            # spectrogram_op = AudioDataset._get_spectrogram_operation(n_fft=1024, win_length=1024, hop_length=256, center=True, pad_mode="reflect", power=2.0)
 
-            spectrogram = spectrogram_op(waveform)
-            temp_spec = deepcopy(spectrogram)
+            # spectrogram = spectrogram_op(waveform)
+            spectrogram = AudioDataset.audio_to_melspectrogram(waveform, resize=True)
+
+            temp_spec = deepcopy(spectrogram)[None]
+            temp_spec = torch.tensor(temp_spec)
             for j in range(generation_count):
                 if  transform ==' input_noise':
-                    temp_waveform = deepcopy(waveform) + ratio*torch.randn_like(waveform)
-                    temp_spec = spectrogram_op(temp_waveform)
-                    reconstructed = SpectrogramsDataModule.custom_augment_torchaudio(temp_spec, transforms=[])['image']
+                    temp_waveform = waveform + ratio*torch.randn_like(waveform)
+                    temp_spec = AudioDataset.audio_to_melspectrogram(temp_waveform, resize=True)[None]
+                    # temp_spec = spectrogram_op(temp_waveform)
+                    reconstructed = SpectrogramsDataModule.custom_augment(temp_spec, transforms=[])['image']
                 else:
-                    reconstructed = SpectrogramsDataModule.custom_augment_torchaudio(temp_spec, transforms=[transform])['image']
-                
+                    reconstructed = SpectrogramsDataModule.custom_augment(temp_spec, transforms=[transform])['image']
+
                 reconstructed = reconstructed.float()
                 reconstructed = reconstructed.numpy()[0]
 
