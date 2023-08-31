@@ -91,8 +91,8 @@
             "args": [
                     "--data_paths", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/cleaned_train/*/*.wav",
                     "--model_path", "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
-                    "--out_folder", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/augmented/noise",
-                    "--augmentations", "noise",
+                    "--out_folder", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/augmented/spec_stretching",
+                    "--augmentations", "spec_stretching",
                     "--num_samples", "4",
             ]
         }

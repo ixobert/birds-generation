@@ -138,11 +138,10 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         return out
 
 
-
+    @classmethod
     def custom_augment(self, input, transforms):
 
         image = deepcopy(input)
-        # image = image[None]
         
         if isinstance(transforms, torchvision.transforms.Compose):
             out = {"image": transforms(image)}
@@ -178,9 +177,11 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 image[:, :,start:start + mask_size] = 0
             elif transform == "spec_stretching":
                 #resize the image along the time axis using bilinear interpolation with a random scale factor between 0.8 and 1.2 using OpenCV
-                scale_factor = np.random.uniform(0.8, 1.2)
-                image = cv2.resize(image[0], (int(image.shape[-1] * scale_factor), image.shape[0]), interpolation=cv2.INTER_LINEAR)
+                # scale_factor = np.random.uniform(0.8, 1.2)
+                scale_factor = 1.2
+                image = cv2.resize(image[0].numpy(), (int(image.shape[-1] * scale_factor), image.shape[-2]), interpolation=cv2.INTER_LINEAR)
                 image = image[None]
+                image = torch.tensor(image)
             else:
                 # print("Transform", transform, "not implemented")
                 pass
