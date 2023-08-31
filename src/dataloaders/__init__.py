@@ -150,7 +150,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
 
         for transform in transforms:
             transform = transform.lower()
-            print("Before", image.shape)
+            # print("Before", image.shape)
             # remove a portion of 20 pixels at random position in the image along the frequency axis using numpy slicing
 
             max_mask_size = 7
@@ -162,7 +162,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 mazk_size = np.random.randint(0, max_mask_size)
                 start = np.random.randint(0, image.shape[2] -mazk_size )
                 image[:, :, start:start +mazk_size ] = 0
-            elif transform == "masking":
+            elif transform == "masking" or transform == "specaug":
                 mazk_size = np.random.randint(0, max_mask_size)
                 start = np.random.randint(0, image.shape[1] -mazk_size )
                 image[:, start:start +mazk_size , :] = 0
@@ -182,9 +182,10 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 image = cv2.resize(image[0], (int(image.shape[-1] * scale_factor), image.shape[0]), interpolation=cv2.INTER_LINEAR)
                 image = image[None]
             else:
-                print("Transform", transform, "not implemented")
+                # print("Transform", transform, "not implemented")
+                pass
 
-                print("After", image.shape)
+                # print("After", image.shape)
         out = {"image":image}
         return out 
 
