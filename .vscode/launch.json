@@ -89,10 +89,10 @@
             "program": "/Users/test/Documents/Projects/Master/birds-generation/src/generate_samples.py",
             "console": "integratedTerminal",
             "args": [
-                    "--data_paths", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/cleaned_train/*/*.wav",
+                    "--data_paths", "/Users/test/Documents/Projects/Master/birds-generation/data/cleaned_train/*/*.wav",
                     "--model_path", "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
-                    "--out_folder", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/augmented/interpolation",
-                    "--augmentations", "interpolation",
+                    "--out_folder", "/Users/test/Documents/Projects/Master/birds-generation/data/augmented/ecogen",
+                    "--augmentations", "interpolation,noise",
                     "--num_samples", "4",
             ]
         }
