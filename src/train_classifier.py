@@ -215,7 +215,7 @@ def main(cfg: DictConfig) -> None:
     best_loss_f1 = [1e9, 0, 0]  # loss, f1-score, best_epoch_id
     for epoch in tqdm(range(cfg['nb_epochs'])):
         metrics = defaultdict(list)
-        for batch in tqdm(datamodule.train_dataloader()):
+        for step, batch in tqdm(enumerate(datamodule.train_dataloader())):
             x, y = batch
             x = x.to(DEVICE)
             y = y.to(DEVICE)
@@ -241,7 +241,7 @@ def main(cfg: DictConfig) -> None:
             optimizer.step()
             optimizer.zero_grad()
         logs = {key: np.mean(values) for key, values in metrics.items()}
-        logging.info(logs)
+        logging.info(f"Epoch: {epoch}/{cfg['nb_epochs']} - {logs}")
 
         for batch in tqdm(datamodule.test_dataloader()):
             metrics = defaultdict(list)
