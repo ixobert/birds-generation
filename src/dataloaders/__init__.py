@@ -1,5 +1,6 @@
 import os
 from copy import deepcopy
+import cv2
 from albumentations import RandomScale, Rotate, GaussNoise, GaussianBlur
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
@@ -100,7 +101,7 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                     GaussianBlur(),
                 ])
         else:
-            transforms_ops = partial(self.custom_augment_torchaudio, transforms=transforms)
+            transforms_ops = partial(self.custom_augment, transforms=transforms)
             print("Transforms ops", transforms_ops)
             # transforms_ops.append(T.Resize((512, 32)))
             # transforms_ops = T.Compose(transforms_ops)
@@ -137,42 +138,53 @@ class SpectrogramsDataModule(pl.LightningDataModule):
         return out
 
 
+
     def custom_augment(self, input, transforms):
+
         image = deepcopy(input)
-        if isinstance(transforms, torch.nn.Sequential):
+        # image = image[None]
+        
+        if isinstance(transforms, torchvision.transforms.Compose):
             out = {"image": transforms(image)}
             return out
-        
+
         for transform in transforms:
             transform = transform.lower()
-            if "masking" in transform:
-                # print("Before", image.shape)
-                # remove a portion of max_size pixels at random position in the image along the frequency axis using numpy slicing
-                max_mask_size = 7
-                if transform == "frequency_masking":
-                    max_size = np.random.randint(0, max_mask_size)
-                    start = np.random.randint(0, image.shape[1] - max_size)
-                    image[:, start:start + max_size, :] = 0
-                elif transform == "time_masking":
-                    max_size = np.random.randint(0, max_mask_size)
-                    start = np.random.randint(0, image.shape[2] - max_size)
-                    image[:, :, start:start + max_size] = 0
-                elif transform == "masking":
-                    max_size = np.random.randint(0, max_mask_size)
-                    start = np.random.randint(0, image.shape[1] - max_size)
-                    image[:, start:start + max_size, :] = 0
-                    max_size = np.random.randint(0, max_mask_size)
-                    start = np.random.randint(0, image.shape[2] - max_size)
-                    image[:, :, start:start + max_size] = 0
+            print("Before", image.shape)
+            # remove a portion of 20 pixels at random position in the image along the frequency axis using numpy slicing
 
-            elif "input_noise" == transform:
-                image += np.random.normal(0, 0.1, image.shape)
-            elif "input_dropout" == transform:
-                image  = np.where(np.random.random(image.shape) < 0.1, 0, image)
-            elif "spec_stretching" == transform:
-                image = None 
+            max_mask_size = 7
+            if transform == "freqmasking":
+                mazk_size = np.random.randint(0, max_mask_size)
+                start = np.random.randint(0, image.shape[1] -mazk_size )
+                image[:, start:start +mazk_size , :] = 0 # Image shape is (1, 256, 32)
+            elif transform == "timemasking":
+                mazk_size = np.random.randint(0, max_mask_size)
+                start = np.random.randint(0, image.shape[2] -mazk_size )
+                image[:, :, start:start +mazk_size ] = 0
+            elif transform == "masking":
+                mazk_size = np.random.randint(0, max_mask_size)
+                start = np.random.randint(0, image.shape[1] -mazk_size )
+                image[:, start:start +mazk_size , :] = 0
+                mazk_size = np.random.randint(0, max_mask_size)
+                start = np.random.randint(0, image.shape[2] -mazk_size )
+                image[:, :, start:start +mazk_size ] = 0
 
 
+            elif transform == "input_dropout":
+                ## perform random 10% erasing on the x axis of the spectrogram using numpy.
+                mask_size = np.random.randint(0, int(image.shape[-1] * 0.1))
+                start = np.random.randint(0, image.shape[-1] - mask_size)
+                image[:, :,start:start + mask_size] = 0
+            elif transform == "spec_stretching":
+                #resize the image along the time axis using bilinear interpolation with a random scale factor between 0.8 and 1.2 using OpenCV
+                scale_factor = np.random.uniform(0.8, 1.2)
+                image = cv2.resize(image[0], (int(image.shape[-1] * scale_factor), image.shape[0]), interpolation=cv2.INTER_LINEAR)
+                image = image[None]
+            else:
+                print("Transform", transform, "not implemented")
+
+                print("After", image.shape)
         out = {"image":image}
         return out 
 
