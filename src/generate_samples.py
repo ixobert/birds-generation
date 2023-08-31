@@ -1,3 +1,4 @@
+import cv2
 from collections import OrderedDict
 from copy import deepcopy
 import os
@@ -69,15 +70,37 @@ class Augmentations():
         audio = librosa.util.fix_length(audio, seconds)
         return audio
 
-    def load_sample_spectrogram(self, audio_path, window_length=16384*4, sr=16384, n_fft=1024):
-        audio = self.load_audio(audio_path, sr, window_length)
-        features = librosa.feature.melspectrogram(y=audio, n_fft=n_fft)
-        features = librosa.power_to_db(features)
+    def load_sample_spectrogram(self, audio_path, window_length=16384*4, sr=16384, n_fft=1024, resize=True):
+        # audio = self.load_audio(audio_path, sr, window_length)
+        # features = librosa.feature.melspectrogram(y=audio, n_fft=n_fft)
+        # features = librosa.power_to_db(features)
+        # # features = cv2.resize(features,(32,256))
 
+        # if features.shape[0] % 2 != 0: 
+        #     features = features[1:, :]
+        # if features.shape[1] % 2 != 0:
+        #     features = features[:, 1:]
+
+        audio, _sr = librosa.load(audio_path, sr=sr)
+        if _sr != sr:
+            audio = librosa.resample(audio, _sr, sr)
+
+        if window_length and len(audio) >= window_length:
+            audio = audio[0:window_length]
+        else:
+            audio = librosa.util.fix_length(audio, window_length)
+        # return audio
+        features = librosa.feature.melspectrogram(y=audio, n_fft=1024)
+        features = librosa.power_to_db(features)
+        if resize:
+            features = cv2.resize(features,(32,256))
+        #If height is odd, skip the first column
         if features.shape[0] % 2 != 0: 
             features = features[1:, :]
+        #If row is odd, skip the first row
         if features.shape[1] % 2 != 0:
             features = features[:, 1:]
+        return features
         return features
 
 

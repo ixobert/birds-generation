@@ -76,7 +76,7 @@
                      "dataset.return_tuple_of3=false",
                      "backbone_network=resnet50",
                      "log_frequency=1",
-                     "dataset.augmentation_mode=[]",
+                     "dataset.augmentation_mode=[spec_stretching]",
                      "dataset.num_workers=0",
                      "+gpus=[\"cpu\"]"
             
@@ -91,8 +91,8 @@
             "args": [
                     "--data_paths", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/cleaned_train/*/*.wav",
                     "--model_path", "/Users/test/Documents/Projects/Master/vq-vae-2-models/models/epoch=5-step=30005.ckpt",
-                    "--out_folder", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/augmented/spec_stretching",
-                    "--augmentations", "spec_stretching",
+                    "--out_folder", "/Users/test/Documents/Projects/Master/ArticBirdsSounds/audio_annots/augmented/interpolation",
+                    "--augmentations", "interpolation",
                     "--num_samples", "4",
             ]
         }

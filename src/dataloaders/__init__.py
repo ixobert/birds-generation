@@ -179,9 +179,10 @@ class SpectrogramsDataModule(pl.LightningDataModule):
                 #resize the image along the time axis using bilinear interpolation with a random scale factor between 0.8 and 1.2 using OpenCV
                 # scale_factor = np.random.uniform(0.8, 1.2)
                 scale_factor = 1.2
-                image = cv2.resize(image[0].numpy(), (int(image.shape[-1] * scale_factor), image.shape[-2]), interpolation=cv2.INTER_LINEAR)
-                image = image[None]
-                image = torch.tensor(image)
+                new_image = image[0].numpy()
+                new_image = cv2.resize(new_image, (int(new_image.shape[-1]* scale_factor), new_image.shape[-2]), interpolation=cv2.INTER_LINEAR)
+                # image = image[None]
+                # image = torch.tensor(image)
             else:
                 # print("Transform", transform, "not implemented")
                 pass
