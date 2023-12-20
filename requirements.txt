@@ -5,7 +5,7 @@ torchvision
 pytorch_lightning==1.8.6
 lightning-flash==0.8.1
 torchmetrics==0.9.3
-transformers==4.10.2
+transformers==4.36.0
 albumentations
 wandb
 hydra-core
