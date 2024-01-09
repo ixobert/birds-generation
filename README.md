@@ -1,6 +1,6 @@
 # ECOGEN: Bird Sounds Generation using Deep Learning
 
-This repository contains the code for the paper [ECOGEN: Bird Sounds Generation using Deep Learning]($PAPER_LINK). 
+This repository contains the code for the paper [ECOGEN: Bird Sounds Generation using Deep Learning](https://doi.org/10.1111/2041-210X.14239). 
 The paper proposes a novel method for generating bird sounds using deep learning by leveraging VQ-VAE2 network architecture.
 The proposed method is able to generate bird sounds that aims to increase the dataset size for bird sound classification tasks.
 
