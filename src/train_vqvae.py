@@ -23,7 +23,7 @@ from utils.helpers import extract_latent
 class VQEngine(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams = hparams
+        self.save_hyperparameters(hparams)
         self.net = networks.VQVAE(**self.hparams.net)
         self.criterion = nn.MSELoss()
         self.cache = {}
