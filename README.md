@@ -30,7 +30,7 @@ The preprocessing steps are as follows:
 We heavily used Hydra to manage the configuration files. The configuration files can be found in the `src/configs` folder. See the [Hydra documentation](https://hydra.cc/docs/intro) for more details.
 
 ### ECOGEN Training
-The ECOGEN training code is inspired from the [VQ-VAE2 implementation]($PAPER_LINK).
+The ECOGEN training code is inspired from the [VQ-VAE2 implementation](https://github.com/rosinality/vq-vae-2-pytorch).
 The training code can be found in the `src` folder.
 The code expects the dataset to be in the following format:
 ```
