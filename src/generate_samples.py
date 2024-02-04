@@ -25,7 +25,6 @@ import tqdm
 import numpy as np
 
 parser = argparse.ArgumentParser(description="Data Augmentator")
-# parser.add_argument('--data_paths', type=str, default="/Users/test/Documents/Projects/Master/nips4bplus/train/Regign_song/*.npy", help="Spectrogram(2d numpy) path list.")
 parser.add_argument('--data_paths', type=str, default="", help="Audio paths list. (*.png, *.npy, *.wav)")
 parser.add_argument("--out_folder", type=str, help="Output folder for generated samples.")
 parser.add_argument('--augmentations', default="noise")
@@ -53,7 +52,7 @@ class Augmentations():
     def load_audio(self, audio_path, sr=16384, seconds=4):
         audio, _sr = librosa.load(audio_path)
         audio = librosa.resample(y=audio, orig_sr=_sr, target_sr=sr)
-        audio = librosa.util.fix_length(audio, seconds)
+        audio = librosa.util.fix_length(data=audio, size=seconds)
         return audio
 
     def load_sample_spectrogram(self, audio_path, window_length=16384*4, sr=16384, n_fft=1024):
@@ -189,16 +188,15 @@ def load_model(model, model_path, device='cuda:0'):
     weights = update_model_keys(weights, key_to_replace='net.')
     model.load_state_dict(weights)
     model = model.eval()
-    # model = model.to(device)
+    model = model.to(device)
     return model
 
 def main() -> None:
     args = parser.parse_args()
-    # model = VQEngine.load_from_checkpoint(args.model_path).to(args.device)
     augmentations = Augmentations()
     model = VQVAE(in_channel=1)
-    if args.model_path != "null":
-        model_vqvae = load_model(model, args.model_path, device=device)
+    if args.model_path:
+        model = load_model(model, args.model_path, device=args.device)
 
     all_samples_paths = glob.glob(args.data_paths)
     aug_methods_names = args.augmentations.split(',')
