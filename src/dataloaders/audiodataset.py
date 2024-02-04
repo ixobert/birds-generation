@@ -182,7 +182,7 @@ class AudioDataset():
     def load_audio(self,file_path, sr, window_length=0):
         audio, _sr = librosa.load(file_path, sr=sr)
         if _sr != self.sr:
-            audio = librosa.resample(audio, _sr, sr)
+            audio = librosa.resample(y=audio, orig_sr=_sr, target_sr=sr)
 
         if self.window_length and len(audio) >= self.window_length:
             audio = audio[0:self.window_length]

@@ -114,7 +114,7 @@ def decode(model, quant_top, quant_bottom):
 @st.cache()
 def load_audio(audio_path, sr=16384, seconds=4):
     audio, _sr = librosa.load(audio_path)
-    audio = librosa.resample(audio, _sr, sr)
+    audio = librosa.resample(y=audio, orig_sr=_sr, target_sr=sr)
     audio = librosa.util.fix_length(audio, seconds)
     return audio
 
@@ -170,7 +170,7 @@ if model_path and infile_path:
     st.write(
         {
             "img.shape": img.shape,
-            "audio length": len(audio)/sr*1.0,
+            "audio length": len(audio)/16384.0,
         }
     )
     isPlaying = st.checkbox("Play Audio")

@@ -63,7 +63,7 @@ def load_sample(file_path, nb_second=4, sr=16384, resize=False):
     window_length = sr*nb_second
     audio, _sr = librosa.load(file_path, sr=sr)
     if _sr != sr:
-        audio = librosa.resample(audio, _sr, sr)
+        audio = librosa.resample(y=audio, orig_sr=_sr, target_sr=sr)
     if len(audio) >= window_length:
         audio = audio[0:window_length]
     else:
