@@ -115,7 +115,7 @@ def decode(model, quant_top, quant_bottom):
 def load_audio(audio_path, sr=16384, seconds=4):
     audio, _sr = librosa.load(audio_path)
     audio = librosa.resample(y=audio, orig_sr=_sr, target_sr=sr)
-    audio = librosa.util.fix_length(audio, seconds)
+    audio = librosa.util.fix_length(data=audio, size=seconds)
     return audio
 
 @st.cache()

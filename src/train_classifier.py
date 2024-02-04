@@ -67,7 +67,7 @@ def load_sample(file_path, nb_second=4, sr=16384, resize=False):
     if len(audio) >= window_length:
         audio = audio[0:window_length]
     else:
-        audio = librosa.util.fix_length(audio, window_length)
+        audio = librosa.util.fix_length(data=audio, size=window_length)
     features = AudioDataset.audio_to_melspectrogram(audio, resize=resize)
     features = torch.from_numpy(features)
     return features

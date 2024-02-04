@@ -187,7 +187,7 @@ class AudioDataset():
         if self.window_length and len(audio) >= self.window_length:
             audio = audio[0:self.window_length]
         else:
-            audio = librosa.util.fix_length(audio, self.window_length)
+            audio = librosa.util.fix_length(data=audio, size=self.window_length)
         return audio
 
     def __getitem__(self, idx):
