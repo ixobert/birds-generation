@@ -16,6 +16,10 @@ The code is tested on Python 3.7.7 and PyTorch 1.13.1. The required packages can
 ```
 git clone https://github.com/ixobert/birds-generation
 cd ./birds-generation/
+#Use this line for M1 series Mac
+pip install -r mac-m1-requirements.txt
+
+#Otherwise use this line
 pip install -r requirements.txt
 ```
 
