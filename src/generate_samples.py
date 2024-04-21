@@ -129,12 +129,12 @@ class Augmentations():
                     spectrogram = torch.tensor(self.load_sample(sample_path))
                     spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-                    q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-                    q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+                    q_t, q_b, i_t, i_b = self.encode(model, spectrogram, device=device)
+                    q_t1, q_b1, i_t1, i_b1 = self.encode(model, spectrogram1, device=device)
                     new_q_t = (q_t1 - q_t)*ratio + q_t
                     new_q_b = (q_b1 - q_b)*ratio + q_b
 
-                    reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+                    reconstructed = self.decode(model, new_q_t, new_q_b).cpu().numpy()[0][0]
                     reconstructed = reconstructed[:,:-4]
 
                     filename, ext = os.path.splitext(sample_path)
@@ -158,12 +158,12 @@ class Augmentations():
     #                 spectrogram = torch.tensor(self.load_sample(sample_path))
     #                 spectrogram1 = torch.tensor(self.load_sample(sample_path1))
 
-    #                 q_t, q_b, i_t, i_b = self.encode(model.net, spectrogram, device=device)
-    #                 q_t1, q_b1, i_t1, i_b1 = self.encode(model.net, spectrogram1, device=device)
+    #                 q_t, q_b, i_t, i_b = self.encode(model, spectrogram, device=device)
+    #                 q_t1, q_b1, i_t1, i_b1 = self.encode(model, spectrogram1, device=device)
     #                 new_q_t = (q_t - q_t1)*ratio + q_t
     #                 new_q_b = (q_b - q_b1)*ratio + q_b
 
-    #                 reconstructed = self.decode(model.net, new_q_t, new_q_b).cpu().numpy()[0][0]
+    #                 reconstructed = self.decode(model, new_q_t, new_q_b).cpu().numpy()[0][0]
     #                 reconstructed = reconstructed[:,:-4]
 
     #                 filename, ext = os.path.splitext(sample_path)
