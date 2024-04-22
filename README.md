@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ```
 
 ## Preprocessing
-The preprocessing steps are as follows:
+The preprocessing steps are as follows to train the ECOGEN VQ-VAE2 model:
 1. Convert the audio files to mono channel
 2. Resample the audio files to 22050 Hz
 3. Trim the audio files to 5 seconds
